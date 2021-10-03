@@ -32,6 +32,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -49,8 +52,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:2.3.1"
 
     //CameraX
-    implementation "androidx.camera:camera-camera2:$versions.camerax"
-    implementation "androidx.camera:camera-lifecycle:$versions.camerax"
+    implementation "androidx.camera:camera-camera2:1.0.2"
+    implementation "androidx.camera:camera-lifecycle:versions.camerax"
     implementation "androidx.camera:camera-view:$versions.cameraXOthers"
 
     //Tests
