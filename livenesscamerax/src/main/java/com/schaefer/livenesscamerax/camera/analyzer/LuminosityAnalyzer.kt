@@ -1,9 +1,10 @@
-package com.schaefer.livenesscamerax.core
+package com.schaefer.livenesscamerax.camera.analyzer
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import java.nio.ByteBuffer
 
+// Reference: https://developer.android.com/codelabs/camerax-getting-started#5
 internal class LuminosityAnalyzer(
     private val listener: (Double) -> Unit
 ) : ImageAnalysis.Analyzer {
