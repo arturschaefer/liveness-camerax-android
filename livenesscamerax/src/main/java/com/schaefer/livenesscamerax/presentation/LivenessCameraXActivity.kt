@@ -1,9 +1,7 @@
 package com.schaefer.livenesscamerax.presentation
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.databinding.ActivityLivenesscameraxBinding
 
 class LivenessCameraXActivity: AppCompatActivity() {
