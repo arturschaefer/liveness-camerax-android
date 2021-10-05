@@ -7,6 +7,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.schaefer.livenesscamerax.camera.processor.CameraXAnalyzer
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
@@ -16,7 +17,6 @@ import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameP
 import com.schaefer.livenesscamerax.domain.model.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 import java.io.File
@@ -32,7 +32,6 @@ private const val SUFFIX_PHOTO_FILE = ".jpg"
 
 @FlowPreview
 @ExperimentalCoroutinesApi
-@ObsoleteCoroutinesApi
 internal class CameraXImpl(
     private val settings: CameraSettings,
     private val analyzeType: AnalyzeType = AnalyzeType.FACE_PROCESSOR,
@@ -233,18 +232,63 @@ internal class CameraXImpl(
     //endregion
 
     //region - Observers and listeners
-    fun getFacesFlowable(): Flow<List<FaceResult>> {
+    override fun getFacesFlowable(): Flow<List<FaceResult>> {
         return frameFaceProcessor.getData()
     }
 
-    fun getLuminosity(): Flow<Double>{
+    override fun getLuminosity(): Flow<Double>{
         return luminosityFrameProcessor.getLuminosity()
     }
 
+    override fun getLifecycleObserver(): LifecycleObserver {
+        return this
+    }
 
     override fun onDestroy(owner: LifecycleOwner) {
         cameraExecutor.shutdown()
         super.onDestroy(owner)
     }
     //endregion
+
+    //TODO
+//    private fun takePhoto() {
+//        // Get a stable reference of the modifiable image capture use case
+//        val imageCapture = imageCapture ?: return
+//
+//        // Create time-stamped output file to hold the image
+//        val photoFile = File(
+//            outputDirectory,
+//            SimpleDateFormat(
+//                com.schaefer.livenesscamerax.presentation.fragment.FILENAME_FORMAT, Locale.US
+//            ).format(System.currentTimeMillis()) + ".jpg"
+//        )
+//
+//        // Create output options object which contains file + metadata
+//        val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+//
+//        // Set up image capture listener, which is triggered after photo has
+//        // been taken
+//        imageCapture.takePicture(
+//            outputOptions,
+//            ContextCompat.getMainExecutor(requireContext()),
+//            object : ImageCapture.OnImageSavedCallback {
+//                override fun onError(exc: ImageCaptureException) {
+//                    Timber.e("Photo capture failed: ${exc.message}")
+//                }
+//
+//                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+//                    val savedUri = Uri.fromFile(photoFile)
+//                    Timber.d("Photo capture succeeded: $savedUri")
+//                }
+//            }
+//        )
+//    }
+
+//    private fun getOutputDirectory(): File {
+//        val mediaDir = activity?.externalMediaDirs?.firstOrNull()?.let {
+//            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
+//        }
+//        return if (mediaDir != null && mediaDir.exists())
+//            mediaDir else activity?.filesDir!!
+//    }
 }
