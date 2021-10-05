@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.schaefer.livenesscamerax">
 
     <uses-feature android:name="android.hardware.camera.any" />
     <uses-permission android:name="android.permission.CAMERA" />
 
-    <application
-        android:name=".CameraXApplication">
-        <activity android:name=".presentation.LivenessCameraXActivity" />
+    <application android:name=".CameraXApplication">
+        <activity
+            android:name=".presentation.LivenessCameraXActivity"
+            android:theme="@style/NoActionBar" />
     </application>
 </manifest>
