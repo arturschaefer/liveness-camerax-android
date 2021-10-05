@@ -2,6 +2,9 @@ package com.schaefer.livenesscamerax.camera.processor
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 internal class CameraXAnalyzer : ImageAnalysis.Analyzer {
 
@@ -12,8 +15,10 @@ internal class CameraXAnalyzer : ImageAnalysis.Analyzer {
     }
 
     override fun analyze(image: ImageProxy) {
-        processors.forEach { processor ->
-            processor.onFrameCaptured(image)
+        CoroutineScope(IO).launch {
+            processors.forEach { processor ->
+                processor.onFrameCaptured(image)
+            }
         }
     }
 }

@@ -2,8 +2,8 @@ package com.schaefer.livenesscamerax.camera.detector
 
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.face.Face
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BroadcastChannel
 
 internal interface FrameFaceDetector {
-    fun detect(imageProxy: ImageProxy): Channel<List<Face>>
+    suspend fun detect(imageProxy: ImageProxy): BroadcastChannel<List<Face>>
 }

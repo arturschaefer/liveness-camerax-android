@@ -10,17 +10,13 @@ import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
 import com.schaefer.livenesscamerax.core.extensions.getLuminosity
 import com.schaefer.livenesscamerax.core.mapper.FaceToFaceResultMapper
 import com.schaefer.livenesscamerax.domain.model.FaceResult
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
-import timber.log.Timber
 
-@ObsoleteCoroutinesApi
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class FaceFrameProcessorImpl : FaceFrameProcessor {
@@ -38,14 +34,11 @@ internal class FaceFrameProcessorImpl : FaceFrameProcessor {
     override fun getData(): Flow<List<FaceResult>> = publishSubject.asFlow()
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    override fun onFrameCaptured(imageProxy: ImageProxy) {
-        Timber.d("Imageproxy ${imageProxy.toString()}")
-        CoroutineScope(IO).launch {
-            detector.detect(imageProxy).consumeAsFlow().collect { frame ->
-                publishSubject.send(
-                    prepareToPublish(frame, imageProxy)
-                )
-            }
+    override suspend fun onFrameCaptured(imageProxy: ImageProxy) {
+        detector.detect(imageProxy).asFlow().collect { frame ->
+            publishSubject.send(
+                prepareToPublish(frame, imageProxy)
+            )
         }
     }
 
@@ -58,6 +51,10 @@ internal class FaceFrameProcessorImpl : FaceFrameProcessor {
     }
 
     private fun addLuminosity(faceResult: FaceResult, image: Image?): FaceResult {
-        return image?.let { faceResult.copy(luminosity = image.getLuminosity()) } ?: faceResult
+        return image?.let {
+            faceResult.copy(luminosity = image.getLuminosity()).also {
+                image.close()
+            }
+        } ?: faceResult
     }
 }
