@@ -1,9 +1,11 @@
 package com.schaefer.livenesscamerax.presentation.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schaefer.livenesscamerax.core.extensions.orFalse
+import com.schaefer.livenesscamerax.core.viewmodel.UIAction
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
 import com.schaefer.livenesscamerax.domain.model.LivenessType
@@ -23,6 +25,21 @@ private const val MINIMUM_LUMINOSITY = 100
 @InternalCoroutinesApi
 internal class LivenessViewModel : ViewModel() {
 
+    private val initialState = LivenessViewState()
+    private val mutableState = MutableLiveData(initialState)
+    val state: LiveData<LivenessViewState> = mutableState
+
+    private val mutableAction = MutableLiveData<UIAction>()
+    val action: LiveData<UIAction> = mutableAction
+
+    private fun setState(state: LivenessViewState) {
+        mutableState.value = state
+    }
+
+    private fun sendAction(action: UIAction) {
+        mutableAction.value = action
+    }
+
     private val originalRequestedSteps = MutableLiveData<LinkedList<LivenessType>>()
     private val requestedSteps = MutableLiveData<LinkedList<LivenessType>>()
     private val facesMutable = MutableLiveData<List<FaceResult>>()
@@ -35,6 +52,7 @@ internal class LivenessViewModel : ViewModel() {
     fun observeFacesDetection(facesFlowable: Flow<List<FaceResult>>) {
         viewModelScope.launch {
             facesFlowable.collect {
+                Timber.tag("FaceResult").d(it.hashCode().toString())
                 handleFaces(it)
             }
         }
@@ -82,11 +100,11 @@ internal class LivenessViewModel : ViewModel() {
                         if (hasBlinked.value.orFalse()) removeCurrentStep()
                     }
                     null -> {
-//                        sendAction(LivenessAction.LivenessCompleted)
+                        sendAction(LivenessAction.LivenessCompleted)
                     }
                 }
             } else {
-//                sendAction(LivenessAction.EnableCameraButton(true))
+                sendAction(LivenessAction.EnableCameraButton(true))
             }
 
             atLeastOneEyeIsOpen.value =

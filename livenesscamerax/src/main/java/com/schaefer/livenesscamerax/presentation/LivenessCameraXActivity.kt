@@ -14,4 +14,8 @@ class LivenessCameraXActivity: AppCompatActivity() {
         binding = ActivityLivenesscameraxBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
+
+    companion object{
+        const val REQUEST_CODE_LIVENESS = "liveness"
+    }
 }

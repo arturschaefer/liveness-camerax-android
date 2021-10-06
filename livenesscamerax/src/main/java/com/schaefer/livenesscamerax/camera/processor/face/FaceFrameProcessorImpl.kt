@@ -10,16 +10,17 @@ import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
 import com.schaefer.livenesscamerax.core.extensions.getLuminosity
 import com.schaefer.livenesscamerax.core.mapper.FaceToFaceResultMapper
 import com.schaefer.livenesscamerax.domain.model.FaceResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-@FlowPreview
-internal class FaceFrameProcessorImpl : FaceFrameProcessor {
+internal class FaceFrameProcessorImpl(
+    private val coroutineScope: CoroutineScope
+) : FaceFrameProcessor {
 
     private val mapper: FaceToFaceResultMapper by lazy {
         FaceToFaceResultMapper()
@@ -29,20 +30,23 @@ internal class FaceFrameProcessorImpl : FaceFrameProcessor {
         VisionFaceDetector()
     }
 
-    private val publishSubject = BroadcastChannel<List<FaceResult>>(1)
+    private val publishSubject = BroadcastChannel<List<FaceResult>>(3)
 
-    override fun getData(): Flow<List<FaceResult>> = publishSubject.asFlow()
+    override fun getData(): Flow<List<FaceResult>> =
+        publishSubject.openSubscription().consumeAsFlow()
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override suspend fun onFrameCaptured(imageProxy: ImageProxy) {
-        detector.detect(imageProxy).asFlow().collect { frame ->
-            publishSubject.send(
-                prepareToPublish(frame, imageProxy)
-            )
+        detector.detect(imageProxy) {
+            coroutineScope.launch {
+                publishSubject.send(
+                    prepareToPublish(it, imageProxy)
+                )
+            }
         }
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
+    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
     private fun prepareToPublish(
         listFace: List<Face>,
         imageProxy: ImageProxy
@@ -51,10 +55,6 @@ internal class FaceFrameProcessorImpl : FaceFrameProcessor {
     }
 
     private fun addLuminosity(faceResult: FaceResult, image: Image?): FaceResult {
-        return image?.let {
-            faceResult.copy(luminosity = image.getLuminosity()).also {
-                image.close()
-            }
-        } ?: faceResult
+        return image?.let { faceResult.copy(luminosity = image.getLuminosity()) } ?: faceResult
     }
 }

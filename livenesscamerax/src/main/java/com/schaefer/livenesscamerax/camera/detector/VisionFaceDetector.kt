@@ -8,13 +8,7 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.launch
 
-@ExperimentalCoroutinesApi
 internal class VisionFaceDetector : FrameFaceDetector {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()
@@ -26,29 +20,31 @@ internal class VisionFaceDetector : FrameFaceDetector {
 
     private val detector: FaceDetector = FaceDetection.getClient(realTimeOpts)
 
-    @SuppressLint("UnsafeOptInUsageError")
-    override suspend fun detect(imageProxy: ImageProxy): BroadcastChannel<List<Face>> {
-        val channel = BroadcastChannel<List<Face>>(1)
+    private fun processImage(
+        image: InputImage,
+        onSuccessListener: (List<Face>) -> Unit = {},
+        onCompleteListener: () -> Unit = {}
+    ): Task<List<Face>> {
+        return detector.process(image)
+            .addOnSuccessListener { faces -> if (faces.isNotEmpty()) onSuccessListener(faces) }
+            .addOnCompleteListener {
+                onCompleteListener.invoke()
+            }
+    }
 
+    @SuppressLint("UnsafeOptInUsageError")
+    override fun detect(imageProxy: ImageProxy, proccessImage: (List<Face>) -> Unit) {
         val image: InputImage = InputImage.fromMediaImage(
             imageProxy.image,
             imageProxy.imageInfo.rotationDegrees
         )
 
-        processImage(image, channel)
-
-        return channel
-    }
-
-    private suspend fun processImage(
-        image: InputImage,
-        emitter: BroadcastChannel<List<Face>>
-    ): Task<List<Face>> {
-        return detector.process(image)
-            .addOnSuccessListener { faces ->
-                CoroutineScope(IO).launch {
-                    if (faces.isNotEmpty()) emitter.send(faces)
-                }
+        processImage(
+            image, {
+                proccessImage.invoke(it)
             }
+        ) {
+            imageProxy.close()
+        }
     }
 }

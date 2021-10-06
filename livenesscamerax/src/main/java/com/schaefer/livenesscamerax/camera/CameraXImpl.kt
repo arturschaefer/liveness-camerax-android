@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.schaefer.livenesscamerax.camera.processor.CameraXAnalyzer
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
@@ -49,7 +50,7 @@ internal class CameraXImpl(
         createCameraExecutor()
     }
     private val frameFaceProcessor: FaceFrameProcessor by lazy {
-        FaceFrameProcessorImpl()
+        FaceFrameProcessorImpl(lifecycleOwner.lifecycleScope)
     }
 
     private val luminosityFrameProcessor: LuminosityFrameProcessor by lazy {
@@ -138,21 +139,19 @@ internal class CameraXImpl(
     }
 
     private fun getAnalyzerType() = when (analyzeType) {
-        AnalyzeType.FACE_PROCESSOR -> CameraXAnalyzer().apply {
+        AnalyzeType.FACE_PROCESSOR -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
             attachProcessor(
                 frameFaceProcessor
             )
         }
-        AnalyzeType.LUMINOSITY -> CameraXAnalyzer().apply {
+        AnalyzeType.LUMINOSITY -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
             attachProcessor(
                 luminosityFrameProcessor
             )
         }
-        AnalyzeType.COMPLETE -> CameraXAnalyzer().apply {
+        AnalyzeType.COMPLETE -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
             attachProcessor(
-                luminosityFrameProcessor
-            )
-            attachProcessor(
+                luminosityFrameProcessor,
                 frameFaceProcessor
             )
         }
@@ -201,7 +200,7 @@ internal class CameraXImpl(
         val photoFile = File(
             outputDirectory,
             SimpleDateFormat(
-               FILENAME_FORMAT, Locale.US
+                FILENAME_FORMAT, Locale.US
             ).format(System.currentTimeMillis()) + ".jpg"
         )
 
@@ -236,7 +235,7 @@ internal class CameraXImpl(
         return frameFaceProcessor.getData()
     }
 
-    override fun getLuminosity(): Flow<Double>{
+    override fun getLuminosity(): Flow<Double> {
         return luminosityFrameProcessor.getLuminosity()
     }
 
