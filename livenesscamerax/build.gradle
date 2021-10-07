@@ -7,6 +7,8 @@ plugins {
 apply from: "$rootDir/dependencies.gradle"
 
 android {
+    resourcePrefix 'liveness_camerax'
+
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildToolsVersion
 
@@ -35,6 +37,10 @@ android {
     }
     buildFeatures {
         viewBinding true
+    }
+
+    lintOptions {
+        baseline file("lint-baseline.xml")
     }
 }
 
