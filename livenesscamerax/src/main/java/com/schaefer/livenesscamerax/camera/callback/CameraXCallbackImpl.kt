@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera
+package com.schaefer.livenesscamerax.camera.callback
 
 import android.content.Context
 import java.io.File
