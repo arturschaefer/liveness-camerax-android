@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.viewmodel.UIAction
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
 import com.schaefer.livenesscamerax.domain.model.LivenessType
+import com.schaefer.livenesscamerax.presentation.provider.ResourceProvider
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -23,7 +25,7 @@ private const val EULER_Y_LEFT_MOVEMENT = -35
 private const val MINIMUM_LUMINOSITY = 100
 
 @InternalCoroutinesApi
-internal class LivenessViewModel : ViewModel() {
+internal class LivenessViewModel(private val resourceProvider: ResourceProvider) : ViewModel() {
 
     private val initialState = LivenessViewState()
     private val mutableState = MutableLiveData(initialState)
@@ -48,23 +50,24 @@ internal class LivenessViewModel : ViewModel() {
     private val hasBlinked = MutableLiveData<Boolean>()
     private val hasSmiled = MutableLiveData<Boolean>()
 
-    //TODO handle error
+    // TODO handle error
     fun observeFacesDetection(facesFlowable: Flow<List<FaceResult>>) {
         viewModelScope.launch {
             facesFlowable.collect {
-                Timber.tag("FaceResult").d(it.hashCode().toString())
                 handleFaces(it)
             }
         }
     }
 
-    fun observeLuminosity(luminosity: Flow<Double>){
+    fun observeLuminosity(luminosity: Flow<Double>) {
         viewModelScope.launch {
             luminosity.collect {
+                // TODO need to decide if it's necessary
                 Timber.tag("Luminosity").d(it.toString())
             }
         }
     }
+
     private fun handleFaces(listFaceResult: List<FaceResult>) {
         facesMutable.value = listFaceResult
         moreThanOneFace.value = hasMoreThanOneFace(listFaceResult)
@@ -109,11 +112,11 @@ internal class LivenessViewModel : ViewModel() {
 
             atLeastOneEyeIsOpen.value =
                 isEyeOpened(face.leftEyeOpenProbability) ||
-                        isEyeOpened(face.rightEyeOpenProbability)
+                    isEyeOpened(face.rightEyeOpenProbability)
         } else {
-            //TODO put a ResourceProvider and remove the hard code strings
+            // TODO put a ResourceProvider and remove the hard code strings
             requestedSteps.value = originalRequestedSteps.value
-//            setState(initialState.livenessMessage("Você está sozinho?"))
+            setState(initialState.livenessMessage("Are you alone?"))
         }
     }
 
@@ -128,8 +131,10 @@ internal class LivenessViewModel : ViewModel() {
         leftEyeProbability: Float?,
         rightEyeProbability: Float?
     ): Boolean {
-        return (leftEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse() &&
-                rightEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse()).also {
+        return (
+            leftEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse() &&
+                rightEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse()
+            ).also {
             if (it.not()) hasBlinked.value = true
         }
     }
@@ -158,28 +163,40 @@ internal class LivenessViewModel : ViewModel() {
         requestedSteps.value = LinkedList<LivenessType>().apply { addAll(validateRequested) }
         originalRequestedSteps.value =
             LinkedList<LivenessType>().apply { addAll(validateRequested) }
-//        setState(initialState.livenessMessage(getMessage(requestedSteps.value)))
+        setState(initialState.livenessMessage(getMessage(requestedSteps.value)))
     }
 
     private fun removeCurrentStep() {
         requestedSteps.value?.pop()
-//        setState(initialState.livenessMessage(getMessage(requestedSteps.value)))
+        setState(initialState.livenessMessage(getMessage(requestedSteps.value)))
     }
 
-    //TODO put a ResourceProvider and remove the hard code strings
+    // TODO put a ResourceProvider and remove the hard code strings
     private fun getMessage(livenessType: LinkedList<LivenessType>?): String {
         if (livenessType.isNullOrEmpty()) {
-            return "Parabéns. Você conclui as etapas! Tire uma foto!"
+            return resourceProvider.getString(R.string.liveness_camerax_step_completed)
         }
 
         return when (livenessType.first) {
-            LivenessType.LUMINOSITY -> "Verifique a iluminação da foto"
-            LivenessType.HEAD_FRONTAL -> "Mantenha sua cabeça na frente da câmera"
-            LivenessType.HEAD_RIGHT -> "Vire a cabeça para a esquerda"
-            LivenessType.HEAD_LEFT -> "Vire a cabeça para a direita"
-            LivenessType.HAS_SMILED -> "Sorria"
-            LivenessType.HAS_BLINKED -> "Pisque os olhos"
-            null -> "Parabéns. Você conclui as etapas!"
+            LivenessType.LUMINOSITY -> {
+                resourceProvider.getString(R.string.liveness_camerax_step_luminosity)
+            }
+            LivenessType.HEAD_FRONTAL -> {
+                resourceProvider.getString(R.string.liveness_camerax_step_head_frontal)
+            }
+            LivenessType.HEAD_RIGHT -> {
+                resourceProvider.getString(R.string.liveness_camerax_step_head_left)
+            }
+            LivenessType.HEAD_LEFT -> {
+                resourceProvider.getString(R.string.liveness_camerax_step_head_right)
+            }
+            LivenessType.HAS_SMILED -> {
+                resourceProvider.getString(R.string.liveness_camerax_step_smile)
+            }
+            LivenessType.HAS_BLINKED -> {
+                resourceProvider.getString(R.string.liveness_camerax_step_blink_eyes)
+            }
+            null -> resourceProvider.getString(R.string.liveness_camerax_step_completed)
         }
     }
 }
