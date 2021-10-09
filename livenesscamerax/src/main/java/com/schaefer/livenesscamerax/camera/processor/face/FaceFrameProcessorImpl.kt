@@ -13,6 +13,7 @@ import com.schaefer.livenesscamerax.domain.model.FaceResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
@@ -30,16 +31,16 @@ internal class FaceFrameProcessorImpl(
         VisionFaceDetector()
     }
 
-    private val publishSubject = BroadcastChannel<List<FaceResult>>(3)
+    private val facesBroadcastChannel = BroadcastChannel<List<FaceResult>>(Channel.BUFFERED)
 
     override fun getData(): Flow<List<FaceResult>> =
-        publishSubject.openSubscription().consumeAsFlow()
+        facesBroadcastChannel.openSubscription().consumeAsFlow()
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override suspend fun onFrameCaptured(imageProxy: ImageProxy) {
         detector.detect(imageProxy) {
             coroutineScope.launch {
-                publishSubject.send(
+                facesBroadcastChannel.send(
                     prepareToPublish(it, imageProxy)
                 )
             }
