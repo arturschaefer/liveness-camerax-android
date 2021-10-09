@@ -8,9 +8,9 @@ import androidx.annotation.IntegerRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 
-//Reference: https://gist.github.com/jemshit/285d750c399bc267dbdad545185d5f7a
-internal class ResourceProviderImpl (private val context: Context)
-    : ResourceProvider {
+// Reference: https://gist.github.com/jemshit/285d750c399bc267dbdad545185d5f7a
+internal class ResourcesProviderImpl(private val context: Context) :
+    ResourcesProvider {
 
     override fun getString(@StringRes resourceIdentifier: Int, vararg arguments: Any): String {
         return if (arguments.isNotEmpty())
@@ -20,19 +20,17 @@ internal class ResourceProviderImpl (private val context: Context)
     }
 
     override fun getStringArray(@ArrayRes resourceIdentifier: Int): Array<String> =
-            context.resources.getStringArray(resourceIdentifier)
+        context.resources.getStringArray(resourceIdentifier)
 
     override fun getInteger(@IntegerRes resourceIdentifier: Int): Int =
-            context.resources.getInteger(resourceIdentifier)
+        context.resources.getInteger(resourceIdentifier)
 
     override fun getIntegerArray(@ArrayRes resourceIdentifier: Int): Array<Int> =
-            context.resources.getIntArray(resourceIdentifier).toTypedArray()
-
+        context.resources.getIntArray(resourceIdentifier).toTypedArray()
 
     override fun getBoolean(@BoolRes resourceIdentifier: Int): Boolean =
-            context.resources.getBoolean(resourceIdentifier)
+        context.resources.getBoolean(resourceIdentifier)
 
     override fun getColor(@ColorRes resourceIdentifier: Int): Int =
-            ContextCompat.getColor(context, resourceIdentifier)
-
+        ContextCompat.getColor(context, resourceIdentifier)
 }

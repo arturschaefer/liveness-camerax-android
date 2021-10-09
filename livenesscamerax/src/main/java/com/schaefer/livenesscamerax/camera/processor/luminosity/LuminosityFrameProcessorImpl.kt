@@ -18,7 +18,7 @@ class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
     override suspend fun onFrameCaptured(imageProxy: ImageProxy) {
-        imageProxy.image?.let {  image ->
+        imageProxy.image?.let { image ->
             val buffer = image.planes[PLAN_Y].buffer
             val data = buffer.toByteArray()
             val pixels = data.map { it.toInt() and 0xFF }
@@ -27,6 +27,5 @@ class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
 
             imageProxy.close()
         }
-
     }
 }

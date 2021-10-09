@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-enum class LivenessType: Parcelable {
+enum class LivenessType : Parcelable {
     LUMINOSITY,
     HEAD_FRONTAL,
     HEAD_LEFT,

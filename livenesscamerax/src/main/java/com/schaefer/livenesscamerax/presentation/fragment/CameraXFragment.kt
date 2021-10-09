@@ -26,7 +26,7 @@ import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.LivenessType
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.PHOTO_PATH_RESULT
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
-import com.schaefer.livenesscamerax.presentation.provider.ResourceProviderImpl
+import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessAction
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModelFactory
@@ -45,7 +45,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private val binding get() = _binding!!
 
     private val livenessViewModel: LivenessViewModel by viewModels {
-        LivenessViewModelFactory(ResourceProviderImpl(requireContext()))
+        LivenessViewModelFactory(ResourcesProviderImpl(requireContext()))
     }
 
     private val cameraXCallback: CameraXCallback by lazy {

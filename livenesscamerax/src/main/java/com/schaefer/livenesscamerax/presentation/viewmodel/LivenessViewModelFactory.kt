@@ -2,20 +2,20 @@ package com.schaefer.livenesscamerax.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.schaefer.livenesscamerax.presentation.provider.ResourceProvider
+import com.schaefer.livenesscamerax.presentation.provider.ResourcesProvider
 import kotlinx.coroutines.InternalCoroutinesApi
 
-//Reference https://github.com/android/architecture-components-samples/blob/master/BasicRxJavaSampleKotlin/app/src/main/java/com/example/android/observability/ui/ViewModelFactory.kt
+// Reference https://github.com/android/architecture-components-samples/blob/master/BasicRxJavaSampleKotlin/app/src/main/java/com/example/android/observability/ui/ViewModelFactory.kt
 
 private const val UNKNOWN_VIEW_MODEL = "Unknown ViewModel class"
 
 @InternalCoroutinesApi
-internal class LivenessViewModelFactory(private val resourceProvider: ResourceProvider) :
+internal class LivenessViewModelFactory(private val resourcesProvider: ResourcesProvider) :
     ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LivenessViewModel::class.java)) {
-            return LivenessViewModel(resourceProvider) as T
+            return LivenessViewModel(resourcesProvider) as T
         }
         throw IllegalArgumentException(UNKNOWN_VIEW_MODEL)
     }

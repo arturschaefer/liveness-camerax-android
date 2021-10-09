@@ -10,7 +10,7 @@ import java.io.File
 
 private const val DIR_NAME = "photos_liveness"
 
-internal fun CameraSettings.getCameraSelector(): CameraSelector{
+internal fun CameraSettings.getCameraSelector(): CameraSelector {
     return when (this.cameraLens) {
         CameraLens.DEFAULT_BACK_CAMERA -> CameraSelector.DEFAULT_BACK_CAMERA
         CameraLens.DEFAULT_FRONT_CAMERA -> CameraSelector.DEFAULT_FRONT_CAMERA
@@ -29,4 +29,3 @@ private fun getExternalDirectory(context: Context): File {
     return if (mediaDir != null && mediaDir.exists())
         mediaDir else context.filesDir
 }
-

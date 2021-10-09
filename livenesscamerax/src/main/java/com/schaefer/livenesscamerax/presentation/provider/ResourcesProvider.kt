@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.presentation.provider
 
-internal interface ResourceProvider {
+internal interface ResourcesProvider {
     fun getString(resourceIdentifier: Int, vararg arguments: Any = arrayOf()): String
 
     fun getStringArray(resourceIdentifier: Int): Array<String>

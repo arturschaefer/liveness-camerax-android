@@ -4,7 +4,7 @@ import android.app.Application
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
-class CameraXApplication: Application() {
+class CameraXApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()

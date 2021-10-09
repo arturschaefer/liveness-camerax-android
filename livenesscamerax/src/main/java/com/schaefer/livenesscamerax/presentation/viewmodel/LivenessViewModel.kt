@@ -10,13 +10,13 @@ import com.schaefer.livenesscamerax.core.viewmodel.UIAction
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
 import com.schaefer.livenesscamerax.domain.model.LivenessType
-import com.schaefer.livenesscamerax.presentation.provider.ResourceProvider
+import com.schaefer.livenesscamerax.presentation.provider.ResourcesProvider
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
+import java.util.LinkedList
 
 private const val EYE_OPENED_PROBABILITY = 0.4F
 private const val IS_SMILING_PROBABILITY = 0.3F
@@ -25,7 +25,7 @@ private const val EULER_Y_LEFT_MOVEMENT = -35
 private const val MINIMUM_LUMINOSITY = 100
 
 @InternalCoroutinesApi
-internal class LivenessViewModel(private val resourceProvider: ResourceProvider) : ViewModel() {
+internal class LivenessViewModel(private val resourcesProvider: ResourcesProvider) : ViewModel() {
 
     private val initialState = LivenessViewState()
     private val mutableState = MutableLiveData(initialState)
@@ -174,29 +174,29 @@ internal class LivenessViewModel(private val resourceProvider: ResourceProvider)
     // TODO put a ResourceProvider and remove the hard code strings
     private fun getMessage(livenessType: LinkedList<LivenessType>?): String {
         if (livenessType.isNullOrEmpty()) {
-            return resourceProvider.getString(R.string.liveness_camerax_step_completed)
+            return resourcesProvider.getString(R.string.liveness_camerax_step_completed)
         }
 
         return when (livenessType.first) {
             LivenessType.LUMINOSITY -> {
-                resourceProvider.getString(R.string.liveness_camerax_step_luminosity)
+                resourcesProvider.getString(R.string.liveness_camerax_step_luminosity)
             }
             LivenessType.HEAD_FRONTAL -> {
-                resourceProvider.getString(R.string.liveness_camerax_step_head_frontal)
+                resourcesProvider.getString(R.string.liveness_camerax_step_head_frontal)
             }
             LivenessType.HEAD_RIGHT -> {
-                resourceProvider.getString(R.string.liveness_camerax_step_head_left)
+                resourcesProvider.getString(R.string.liveness_camerax_step_head_left)
             }
             LivenessType.HEAD_LEFT -> {
-                resourceProvider.getString(R.string.liveness_camerax_step_head_right)
+                resourcesProvider.getString(R.string.liveness_camerax_step_head_right)
             }
             LivenessType.HAS_SMILED -> {
-                resourceProvider.getString(R.string.liveness_camerax_step_smile)
+                resourcesProvider.getString(R.string.liveness_camerax_step_smile)
             }
             LivenessType.HAS_BLINKED -> {
-                resourceProvider.getString(R.string.liveness_camerax_step_blink_eyes)
+                resourcesProvider.getString(R.string.liveness_camerax_step_blink_eyes)
             }
-            null -> resourceProvider.getString(R.string.liveness_camerax_step_completed)
+            null -> resourcesProvider.getString(R.string.liveness_camerax_step_completed)
         }
     }
 }
