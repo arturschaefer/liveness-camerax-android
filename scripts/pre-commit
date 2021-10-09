@@ -4,8 +4,7 @@
 
 echo "Running git pre-commit hook"
 
-./gradlew ktlintCi
-./gradlew detektCi
+./gradlew ktlintCheck detekt --daemon
 
 RESULT=$?
 
