@@ -11,4 +11,5 @@
     <string name="liveness_camerax_step_head_right">Vire a cabeça para a direita</string>
     <string name="liveness_camerax_step_smile">Sorria</string>
     <string name="liveness_camerax_step_blink_eyes">Pisque os olhos</string>
+    <string name="liveness_camerax_message_alone">Are you alone?</string>
 </resources>

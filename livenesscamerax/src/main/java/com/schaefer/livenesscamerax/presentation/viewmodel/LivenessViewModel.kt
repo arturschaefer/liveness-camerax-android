@@ -1,12 +1,11 @@
 package com.schaefer.livenesscamerax.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.core.extensions.orFalse
-import com.schaefer.livenesscamerax.core.viewmodel.UIAction
+import com.schaefer.livenesscamerax.core.viewmodel.ReactiveViewModel
+import com.schaefer.livenesscamerax.domain.logic.LivenessChecker
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
 import com.schaefer.livenesscamerax.domain.model.LivenessType
@@ -18,29 +17,15 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.LinkedList
 
-private const val EYE_OPENED_PROBABILITY = 0.4F
-private const val IS_SMILING_PROBABILITY = 0.3F
-private const val EULER_Y_RIGHT_MOVEMENT = 35
-private const val EULER_Y_LEFT_MOVEMENT = -35
 private const val MINIMUM_LUMINOSITY = 100
 
 @InternalCoroutinesApi
-internal class LivenessViewModel(private val resourcesProvider: ResourcesProvider) : ViewModel() {
+internal class LivenessViewModel(
+    private val resourcesProvider: ResourcesProvider,
+    private val livenessChecker: LivenessChecker,
+) : ReactiveViewModel<LivenessViewState, LivenessAction>(LivenessViewState()) {
 
     private val initialState = LivenessViewState()
-    private val mutableState = MutableLiveData(initialState)
-    val state: LiveData<LivenessViewState> = mutableState
-
-    private val mutableAction = MutableLiveData<UIAction>()
-    val action: LiveData<UIAction> = mutableAction
-
-    private fun setState(state: LivenessViewState) {
-        mutableState.value = state
-    }
-
-    private fun sendAction(action: UIAction) {
-        mutableAction.value = action
-    }
 
     private val originalRequestedSteps = MutableLiveData<LinkedList<LivenessType>>()
     private val requestedSteps = MutableLiveData<LinkedList<LivenessType>>()
@@ -70,88 +55,64 @@ internal class LivenessViewModel(private val resourcesProvider: ResourcesProvide
 
     private fun handleFaces(listFaceResult: List<FaceResult>) {
         facesMutable.value = listFaceResult
-        moreThanOneFace.value = hasMoreThanOneFace(listFaceResult)
+        moreThanOneFace.value = livenessChecker.hasMoreThanOneFace(listFaceResult)
 
-        if (hasMoreThanOneFace(listFaceResult).not()) {
+        if (livenessChecker.hasMoreThanOneFace(listFaceResult).not()) {
             val face = listFaceResult.first()
-            if (requestedSteps.value?.isNotEmpty().orFalse()) {
-                when (requestedSteps.value?.first) {
-                    LivenessType.LUMINOSITY -> {
-                        if (isLuminosityGood(face.luminosity)) removeCurrentStep()
-                    }
-                    LivenessType.HEAD_FRONTAL -> {
-                        if (detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
-                            removeCurrentStep()
-                        }
-                    }
-                    LivenessType.HEAD_LEFT -> {
-                        if (detectEulerYMovement(face.headEulerAngleY) == HeadMovement.LEFT) {
-                            removeCurrentStep()
-                        }
-                    }
-                    LivenessType.HEAD_RIGHT -> {
-                        if (detectEulerYMovement(face.headEulerAngleY) == HeadMovement.RIGHT) {
-                            removeCurrentStep()
-                        }
-                    }
-                    LivenessType.HAS_SMILED -> {
-                        checkSmile(face.smilingProbability)
-                        if (hasSmiled.value.orFalse()) removeCurrentStep()
-                    }
-                    LivenessType.HAS_BLINKED -> {
-                        checkBothEyes(face.leftEyeOpenProbability, face.rightEyeOpenProbability)
-                        if (hasBlinked.value.orFalse()) removeCurrentStep()
-                    }
-                    null -> {
-                        sendAction(LivenessAction.LivenessCompleted)
-                    }
-                }
-            } else {
-                sendAction(LivenessAction.EnableCameraButton(true))
-            }
+            checkFaceLiveness(face)
 
             atLeastOneEyeIsOpen.value =
-                isEyeOpened(face.leftEyeOpenProbability) ||
-                    isEyeOpened(face.rightEyeOpenProbability)
+                livenessChecker.isEyeOpened(face.leftEyeOpenProbability) ||
+                        livenessChecker.isEyeOpened(face.rightEyeOpenProbability)
         } else {
             // TODO put a ResourceProvider and remove the hard code strings
             requestedSteps.value = originalRequestedSteps.value
-            setState(initialState.livenessMessage("Are you alone?"))
+            setState(initialState.livenessMessage(resourcesProvider.getString(R.string.liveness_camerax_message_alone)))
         }
     }
 
-    private fun hasMoreThanOneFace(listFaceResult: List<FaceResult>) =
-        listFaceResult.isNotEmpty() && listFaceResult.size > 1
-
-    private fun isEyeOpened(eyeOpenedProbabilityValue: Float?): Boolean {
-        return eyeOpenedProbabilityValue?.let { (it > EYE_OPENED_PROBABILITY) }.orFalse()
-    }
-
-    private fun checkBothEyes(
-        leftEyeProbability: Float?,
-        rightEyeProbability: Float?
-    ): Boolean {
-        return (
-            leftEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse() &&
-                rightEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse()
-            ).also {
-            if (it.not()) hasBlinked.value = true
-        }
-    }
-
-    private fun checkSmile(smilingProbability: Float?): Boolean {
-        return smilingProbability?.let { it > IS_SMILING_PROBABILITY }.orFalse().also { isSmiling ->
-            if (isSmiling) hasSmiled.value = isSmiling
-        }
-    }
-
-    private fun detectEulerYMovement(
-        headEulerAngleY: Float
-    ): HeadMovement {
-        return when {
-            headEulerAngleY > EULER_Y_RIGHT_MOVEMENT -> HeadMovement.RIGHT
-            headEulerAngleY < EULER_Y_LEFT_MOVEMENT -> HeadMovement.LEFT
-            else -> HeadMovement.CENTER
+    private fun checkFaceLiveness(face: FaceResult) {
+        if (requestedSteps.value?.isNotEmpty().orFalse()) {
+            when (requestedSteps.value?.first) {
+                LivenessType.LUMINOSITY -> {
+                    if (isLuminosityGood(face.luminosity)) removeCurrentStep()
+                }
+                LivenessType.HEAD_FRONTAL -> {
+                    if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
+                        removeCurrentStep()
+                    }
+                }
+                LivenessType.HEAD_LEFT -> {
+                    if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.LEFT) {
+                        removeCurrentStep()
+                    }
+                }
+                LivenessType.HEAD_RIGHT -> {
+                    if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.RIGHT) {
+                        removeCurrentStep()
+                    }
+                }
+                LivenessType.HAS_SMILED -> {
+                    livenessChecker.checkSmile(face.smilingProbability) {
+                        hasSmiled.value = it
+                    }
+                    if (hasSmiled.value.orFalse()) removeCurrentStep()
+                }
+                LivenessType.HAS_BLINKED -> {
+                    livenessChecker.checkBothEyes(
+                        face.leftEyeOpenProbability,
+                        face.rightEyeOpenProbability
+                    ) {
+                        hasBlinked.value = it
+                    }
+                    if (hasBlinked.value.orFalse()) removeCurrentStep()
+                }
+                null -> {
+                    sendAction(LivenessAction.LivenessCompleted)
+                }
+            }
+        } else {
+            sendAction(LivenessAction.EnableCameraButton(true))
         }
     }
 

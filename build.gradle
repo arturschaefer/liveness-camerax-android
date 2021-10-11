@@ -3,7 +3,6 @@ import org.apache.tools.ant.taskdefs.condition.Os
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     apply from: "$rootDir/dependencies.gradle"
-    apply from: "$rootDir/tasks.gradle"
 
     repositories {
         google()
@@ -26,8 +25,13 @@ plugins {
     id "io.gitlab.arturbosch.detekt" version "$detektVersion"
 }
 
-detekt {
-    config = files("config/detekt/detekt.yml")
+allprojects{
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
+    apply plugin: 'io.gitlab.arturbosch.detekt'
+
+    detekt {
+        config = files("config/detekt/detekt.yml")
+    }
 }
 
 task clean(type: Delete) {

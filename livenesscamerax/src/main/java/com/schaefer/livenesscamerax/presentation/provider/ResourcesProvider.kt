@@ -7,7 +7,7 @@ internal interface ResourcesProvider {
 
     fun getInteger(resourceIdentifier: Int): Int
 
-    fun getIntegerArray(resourceIdentifier: Int): Array<Int>
+    fun getIntegerArray(resourceIdentifier: Int): IntArray
 
     fun getBoolean(resourceIdentifier: Int): Boolean
 

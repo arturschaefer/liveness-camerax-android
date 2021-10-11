@@ -29,8 +29,6 @@ class OverlayView : View {
     private var horizontalMargin = 0f
     private var verticalMargin = 0f
 
-    constructor(context: Context?) : super(context) {}
-    constructor(context: Context?, @Nullable attrs: AttributeSet?) : super(context, attrs) {}
     constructor(context: Context?, @Nullable attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,
         attrs,

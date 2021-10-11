@@ -2,6 +2,7 @@ package com.schaefer.livenesscamerax.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.schaefer.livenesscamerax.domain.logic.LivenessChecker
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProvider
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -10,12 +11,14 @@ import kotlinx.coroutines.InternalCoroutinesApi
 private const val UNKNOWN_VIEW_MODEL = "Unknown ViewModel class"
 
 @InternalCoroutinesApi
-internal class LivenessViewModelFactory(private val resourcesProvider: ResourcesProvider) :
-    ViewModelProvider.Factory {
+internal class LivenessViewModelFactory(
+    private val resourcesProvider: ResourcesProvider,
+    private val livenessChecker: LivenessChecker
+) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LivenessViewModel::class.java)) {
-            return LivenessViewModel(resourcesProvider) as T
+            return LivenessViewModel(resourcesProvider, livenessChecker) as T
         }
         throw IllegalArgumentException(UNKNOWN_VIEW_MODEL)
     }

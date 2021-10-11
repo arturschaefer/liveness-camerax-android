@@ -7,5 +7,6 @@ internal data class CameraSettings(
     val takeAutomaticPicture: Boolean = false,
     val isFlashEnabled: Boolean = false,
     val isZoomEnabled: Boolean = false,
-    val isAutoFocusEnabled: Boolean = true
+    val isAutoFocusEnabled: Boolean = true,
+    val analyzeType: AnalyzeType = AnalyzeType.FACE_PROCESSOR,
 )

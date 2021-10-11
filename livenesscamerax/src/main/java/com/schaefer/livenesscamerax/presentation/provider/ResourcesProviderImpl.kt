@@ -25,8 +25,8 @@ internal class ResourcesProviderImpl(private val context: Context) :
     override fun getInteger(@IntegerRes resourceIdentifier: Int): Int =
         context.resources.getInteger(resourceIdentifier)
 
-    override fun getIntegerArray(@ArrayRes resourceIdentifier: Int): Array<Int> =
-        context.resources.getIntArray(resourceIdentifier).toTypedArray()
+    override fun getIntegerArray(@ArrayRes resourceIdentifier: Int): IntArray =
+        context.resources.getIntArray(resourceIdentifier)
 
     override fun getBoolean(@BoolRes resourceIdentifier: Int): Boolean =
         context.resources.getBoolean(resourceIdentifier)

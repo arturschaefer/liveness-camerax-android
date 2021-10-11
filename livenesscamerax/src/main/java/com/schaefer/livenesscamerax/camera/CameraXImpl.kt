@@ -2,7 +2,6 @@ package com.schaefer.livenesscamerax.camera
 
 import android.content.Context
 import androidx.camera.core.Camera
-import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
@@ -13,14 +12,14 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.camera.processor.CameraXAnalyzer
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
+import com.schaefer.livenesscamerax.camera.provider.AnalyzerProvider
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
+import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
-import com.schaefer.livenesscamerax.domain.model.AnalyzeType
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -33,7 +32,6 @@ import java.util.concurrent.Future
 @ExperimentalCoroutinesApi
 internal class CameraXImpl(
     private val settings: CameraSettings,
-    private val analyzeType: AnalyzeType = AnalyzeType.FACE_PROCESSOR,
     private val cameraXCallback: CameraXCallback,
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
@@ -46,6 +44,15 @@ internal class CameraXImpl(
     }
     private val luminosityFrameProcessor: LuminosityFrameProcessor by lazy {
         LuminosityFrameProcessorImpl()
+    }
+    private val analyzerProvider by lazy {
+        AnalyzerProvider(
+            settings.analyzeType,
+            lifecycleOwner,
+            cameraExecutors,
+            frameFaceProcessor,
+            luminosityFrameProcessor
+        )
     }
     private var camera: Camera? = null
 
@@ -100,6 +107,7 @@ internal class CameraXImpl(
         super.onDestroy(owner)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun setupCamera(
         cameraProviderFuture: Future<ProcessCameraProvider>,
         previewView: PreviewView,
@@ -108,7 +116,7 @@ internal class CameraXImpl(
         camera = null
         val cameraProvider = cameraProviderFuture.get()
         val preview = createPreview(previewView.surfaceProvider)
-        val analyzer = createAnalyzer()
+        val analyzer = analyzerProvider.createAnalyzer()
         val cameraSelector = settings.getCameraSelector()
 
         try {
@@ -124,6 +132,12 @@ internal class CameraXImpl(
             enableFlash(settings.isFlashEnabled)
         } catch (ex: Exception) {
             Timber.e(ex.toString())
+            cameraXCallback.onError(
+                LivenessCameraXException.StartCameraException(
+                    ex.message,
+                    ex.cause
+                )
+            )
         }
     }
 
@@ -132,36 +146,5 @@ internal class CameraXImpl(
             preview.setSurfaceProvider(surfaceProvider)
         }
     }
-
-    private fun createAnalyzer(): ImageAnalysis {
-        return ImageAnalysis.Builder()
-            .build()
-            .also { imageAnalysis ->
-                imageAnalysis.setAnalyzer(
-                    cameraExecutors,
-                    getAnalyzerType()
-                )
-            }
-    }
-
-    private fun getAnalyzerType() =
-        when (analyzeType) {
-            AnalyzeType.FACE_PROCESSOR -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
-                attachProcessor(
-                    frameFaceProcessor
-                )
-            }
-            AnalyzeType.LUMINOSITY -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
-                attachProcessor(
-                    luminosityFrameProcessor
-                )
-            }
-            AnalyzeType.COMPLETE -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
-                attachProcessor(
-                    luminosityFrameProcessor,
-                    frameFaceProcessor
-                )
-            }
-        }
     //endregion
 }

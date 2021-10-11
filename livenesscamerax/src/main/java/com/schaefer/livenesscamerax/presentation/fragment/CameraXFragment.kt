@@ -18,9 +18,11 @@ import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
+import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
+import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
 import com.schaefer.livenesscamerax.domain.model.AnalyzeType
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.LivenessType
@@ -45,7 +47,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private val binding get() = _binding!!
 
     private val livenessViewModel: LivenessViewModel by viewModels {
-        LivenessViewModelFactory(ResourcesProviderImpl(requireContext()))
+        LivenessViewModelFactory(ResourcesProviderImpl(requireContext()), LivenessCheckerImpl())
     }
 
     private val cameraXCallback: CameraXCallback by lazy {
@@ -65,22 +67,28 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private val cameraManifest = Manifest.permission.CAMERA
     private val cameraPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            with(binding.clRoot) {
-                when {
-                    granted -> permissionIsGranted()
-                    requireActivity().shouldShowRequest(cameraManifest) -> {
-                        snack(context.getString(R.string.liveness_camerax_message_permission_denied))
-                    }
-                    else -> snack(context.getString(R.string.liveness_camerax_message_permission_unknown))
-                }
-            }
+            handleCameraPermission(granted.orFalse(), binding.clRoot)
         }
+
+    private fun handleCameraPermission(granted: Boolean, parentView: View) {
+        when {
+            granted -> permissionIsGranted()
+            requireActivity().shouldShowRequest(cameraManifest) -> {
+                parentView.snack(
+                    requireContext().getString(R.string.liveness_camerax_message_permission_denied)
+                )
+            }
+            else -> parentView.snack(
+                requireContext().getString(R.string.liveness_camerax_message_permission_unknown)
+            )
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = LivenessCameraxFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
