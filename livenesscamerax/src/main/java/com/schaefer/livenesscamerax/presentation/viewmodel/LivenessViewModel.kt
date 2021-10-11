@@ -61,9 +61,7 @@ internal class LivenessViewModel(
             val face = listFaceResult.first()
             checkFaceLiveness(face)
 
-            atLeastOneEyeIsOpen.value =
-                livenessChecker.isEyeOpened(face.leftEyeOpenProbability) ||
-                        livenessChecker.isEyeOpened(face.rightEyeOpenProbability)
+            atLeastOneEyeIsOpen.value = livenessChecker.validateAtLeastOneEyeIsOpen()
         } else {
             // TODO put a ResourceProvider and remove the hard code strings
             requestedSteps.value = originalRequestedSteps.value
@@ -83,20 +81,20 @@ internal class LivenessViewModel(
                     }
                 }
                 LivenessType.HEAD_LEFT -> {
-                    if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.LEFT) {
+                    livenessChecker.validateHeadMovement(face, HeadMovement.LEFT) {
                         removeCurrentStep()
                     }
                 }
                 LivenessType.HEAD_RIGHT -> {
-                    if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.RIGHT) {
+                    livenessChecker.validateHeadMovement(face, HeadMovement.RIGHT) {
                         removeCurrentStep()
                     }
                 }
                 LivenessType.HAS_SMILED -> {
                     livenessChecker.checkSmile(face.smilingProbability) {
                         hasSmiled.value = it
+                        if (it) removeCurrentStep()
                     }
-                    if (hasSmiled.value.orFalse()) removeCurrentStep()
                 }
                 LivenessType.HAS_BLINKED -> {
                     livenessChecker.checkBothEyes(
@@ -104,8 +102,8 @@ internal class LivenessViewModel(
                         face.rightEyeOpenProbability
                     ) {
                         hasBlinked.value = it
+                        if (it) removeCurrentStep()
                     }
-                    if (hasBlinked.value.orFalse()) removeCurrentStep()
                 }
                 null -> {
                     sendAction(LivenessAction.LivenessCompleted)

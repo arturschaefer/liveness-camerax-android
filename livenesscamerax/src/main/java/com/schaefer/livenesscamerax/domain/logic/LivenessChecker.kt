@@ -19,4 +19,12 @@ internal interface LivenessChecker {
     fun detectEulerYMovement(
         headEulerAngleY: Float
     ): HeadMovement
+
+    fun validateHeadMovement(
+        face: FaceResult,
+        headMovement: HeadMovement,
+        removeCurrentStep: () -> Unit
+    )
+
+    fun validateAtLeastOneEyeIsOpen(face: FaceResult): Boolean
 }

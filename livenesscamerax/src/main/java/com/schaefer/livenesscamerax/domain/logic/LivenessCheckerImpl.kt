@@ -4,7 +4,6 @@ import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
 
-
 private const val EYE_OPENED_PROBABILITY = 0.4F
 private const val IS_SMILING_PROBABILITY = 0.3F
 private const val EULER_Y_RIGHT_MOVEMENT = 35
@@ -21,11 +20,11 @@ internal class LivenessCheckerImpl : LivenessChecker {
         rightEyeProbability: Float?,
         callbackBlinked: (Boolean) -> Unit
     ): Boolean {
-        return (
-                leftEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse() &&
-                        rightEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse()
-                ).also {
-//                if (it.not()) hasBlinked.value = true
+        val leftEyeProbability = leftEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse()
+        val rightEyeProbability = rightEyeProbability?.let { it > EYE_OPENED_PROBABILITY }.orFalse()
+
+        return (leftEyeProbability && rightEyeProbability)
+            .also {
                 if (it.not()) callbackBlinked.invoke(true)
             }
     }
@@ -50,5 +49,19 @@ internal class LivenessCheckerImpl : LivenessChecker {
             headEulerAngleY < EULER_Y_LEFT_MOVEMENT -> HeadMovement.LEFT
             else -> HeadMovement.CENTER
         }
+    }
+
+    override fun validateHeadMovement(
+        face: FaceResult,
+        headMovement: HeadMovement,
+        removeCurrentStep: () -> Unit
+    ) {
+        if (detectEulerYMovement(face.headEulerAngleY) == headMovement) {
+            removeCurrentStep()
+        }
+    }
+
+    override fun validateAtLeastOneEyeIsOpen(face: FaceResult): Boolean {
+        return isEyeOpened(face.leftEyeOpenProbability) || isEyeOpened(face.rightEyeOpenProbability)
     }
 }
