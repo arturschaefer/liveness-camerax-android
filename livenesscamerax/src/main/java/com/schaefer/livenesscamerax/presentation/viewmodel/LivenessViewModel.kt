@@ -61,9 +61,8 @@ internal class LivenessViewModel(
             val face = listFaceResult.first()
             checkFaceLiveness(face)
 
-            atLeastOneEyeIsOpen.value = livenessChecker.validateAtLeastOneEyeIsOpen()
+            atLeastOneEyeIsOpen.value = livenessChecker.validateAtLeastOneEyeIsOpen(face)
         } else {
-            // TODO put a ResourceProvider and remove the hard code strings
             requestedSteps.value = originalRequestedSteps.value
             setState(initialState.livenessMessage(resourcesProvider.getString(R.string.liveness_camerax_message_alone)))
         }

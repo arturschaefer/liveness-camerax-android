@@ -23,7 +23,6 @@ import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
-import com.schaefer.livenesscamerax.domain.model.AnalyzeType
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.LivenessType
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.PHOTO_PATH_RESULT
@@ -58,7 +57,6 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         CameraXImpl(
             settings = CameraSettings(),
             cameraXCallback = cameraXCallback,
-            analyzeType = AnalyzeType.FACE_PROCESSOR,
             lifecycleOwner = this,
             context = requireContext()
         )
