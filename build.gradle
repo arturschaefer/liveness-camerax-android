@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     apply from: "$rootDir/dependencies.gradle"
@@ -6,6 +8,7 @@ buildscript {
         google()
         mavenCentral()
     }
+
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.gradle"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
@@ -14,6 +17,20 @@ buildscript {
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+}
+
+plugins {
+    id "org.jlleitschuh.gradle.ktlint" version "$ktlintVersion"
+    id "io.gitlab.arturbosch.detekt" version "$detektVersion"
+}
+
+allprojects{
+    apply plugin: "org.jlleitschuh.gradle.ktlint"
+    apply plugin: 'io.gitlab.arturbosch.detekt'
+
+    detekt {
+        config = files("config/detekt/detekt.yml")
     }
 }
 
