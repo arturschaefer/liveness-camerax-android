@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="liveness_camerax_overlay_alpha_background">200</integer>
+</resources>

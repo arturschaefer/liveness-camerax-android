@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Liveness ML Kit</string>
+    <string name="liveness_camerax_step_smile">Smile</string>
 </resources>

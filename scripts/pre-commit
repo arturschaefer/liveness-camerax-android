@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Adapted from https://proandroiddev.com/ooga-chaka-git-hooks-to-enforce-code-quality-11ce8d0d23cb
+
+echo "Checking code formatting..."
+
+./gradlew ktlintCheck detekt --daemon
+
+status=$?
+
+if [ "$status" = 0 ] ; then
+    echo "Code formatting is ok."
+    exit 0
+else
+    echo 1>&2 "There are code formatting or code quality issues."
+    echo 1>&2 "You can use the option --no-verify in commits to bypass this hook (although this is not recommended)"
+    exit 1
+fi

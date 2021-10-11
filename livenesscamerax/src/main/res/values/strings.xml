@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="liveness_camerax_app_name">LivenessCameraX</string>
+    <string name="liveness_camerax_message_permission_denied">Permission denied, show more info!</string>
+    <string name="liveness_camerax_message_permission_unknown">Permission denied</string>
+    <string name="liveness_camerax_take_photo">Take Picture</string>
+    <string name="liveness_camerax_step_completed">Congratulations! You have completed the steps! Take picture!</string>
+    <string name="liveness_camerax_step_luminosity">Please check your room lighting</string>
+    <string name="liveness_camerax_step_head_frontal">Keep and still your head in front of the camera</string>
+    <string name="liveness_camerax_step_head_left">Turn your head to left</string>
+    <string name="liveness_camerax_step_head_right">Turn your head to right</string>
+    <string name="liveness_camerax_step_smile">Smile</string>
+    <string name="liveness_camerax_step_blink_eyes">Blink your eyes</string>
+    <string name="liveness_camerax_message_alone">Are you alone?</string>
+</resources>

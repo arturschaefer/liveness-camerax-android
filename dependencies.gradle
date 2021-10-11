@@ -10,7 +10,7 @@ ext.versions = [
         gradle                 : '4.1.3',
         kotlin                 : '1.5.31',
         jvmTarget              : '1.8',
-        ktx                    : '1.3.2',
+        ktx                    : '1.6.0',
 
         //Dependency Injection
         hilt                   : '2.35',
@@ -18,14 +18,16 @@ ext.versions = [
         hilt_compiler          : '1.0.0',
 
         //CameraX
-        cameraX                : "1.0.0-rc03",
-        cameraXOthers          : "1.0.0-alpha29",
+        cameraX                : '1.0.2',
+        cameraXOthers          : '1.0.0-alpha29',
 
         //ML Kit
-        mlkit                  : "16.0.5",
+        mlkit                  : '16.0.5',
+        faceDetection          : '16.2.0',
+        vision                 : '16.6.0',
 
         //Architecture components
-        lifecycle              : '2.2.0',
+        lifecycle              : '2.3.1',
 
         //Logging
         timber                 : '4.7.1',
@@ -35,8 +37,8 @@ ext.versions = [
 
         //Tests
         junit                  : '4.+',
-        junit_ext              : '1.1.2',
-        espresso               : '3.3.0',
+        junit_ext              : '1.1.3',
+        espresso               : '3.4.0',
         mockito_kotlin         : '2.2.0',
 
         //Json serialization
@@ -49,11 +51,10 @@ ext.versions = [
         vector_drawable        : '1.1.0',
         material               : '1.2.1',
         legacy_support         : '1.0.0',
-        constraint_layout      : '2.1.1',
-        appcompat              : '1.2.0',
-        constraintlayout       : '2.0.4',
-        fragment               : '1.3.2',
-        activity               : '1.2.2',
+        appcompat              : '1.3.1',
+        constraintlayout       : '2.1.1',
+        fragment               : '1.3.6',
+        activity               : '1.3.1',
         cardview               : '1.0.0',
-        material               : '1.3.0',
+        material               : '1.4.0',
 ]

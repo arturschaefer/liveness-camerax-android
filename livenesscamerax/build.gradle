@@ -1,11 +1,14 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-parcelize'
 }
 
 apply from: "$rootDir/dependencies.gradle"
 
 android {
+    resourcePrefix 'liveness_camerax'
+
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildToolsVersion
 
@@ -32,6 +35,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+    }
+
+    lintOptions {
+        baseline file("lint-baseline.xml")
+    }
 }
 
 dependencies {
@@ -46,13 +56,20 @@ dependencies {
     implementation "androidx.activity:activity-ktx:$versions.activity"
     implementation "com.google.android.material:material:$versions.material"
     implementation "androidx.cardview:cardview:$versions.cardview"
-    implementation "androidx.lifecycle:lifecycle-common-java8:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$versions.lifecycle"
+
+    //Google Services
+    implementation "com.google.android.gms:play-services-mlkit-face-detection:$versions.faceDetection"
+    implementation "com.google.mlkit:vision-common:$versions.vision"
 
     //CameraX
-    implementation "androidx.camera:camera-camera2:$versions.camerax"
-    implementation "androidx.camera:camera-lifecycle:$versions.camerax"
+    implementation "androidx.camera:camera-camera2:$versions.cameraX"
+    implementation "androidx.camera:camera-lifecycle:$versions.cameraX"
     implementation "androidx.camera:camera-view:$versions.cameraXOthers"
 
+    //Square
+    implementation "com.jakewharton.timber:timber:$versions.timber"
+    
     //Tests
     testImplementation "junit:junit:$versions.junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"
