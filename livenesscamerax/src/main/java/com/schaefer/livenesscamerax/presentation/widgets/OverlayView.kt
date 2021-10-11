@@ -2,38 +2,46 @@ package com.schaefer.livenesscamerax.presentation.widgets
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import androidx.annotation.ColorRes
-import androidx.annotation.Nullable
+import androidx.annotation.DimenRes
 import com.schaefer.livenesscamerax.R
 
 private const val WIDTH_FACTOR = 2.9f
 private const val HEIGHT_FACTOR = 12f
-private const val ALPHA_VALUE = 200
-private const val HORIZONTAL_MARGIN = 150f
-private const val VERTICAL_MARGIN = 400f
-private const val SWEEP_ANGLE = 360F
-private const val STROKE_WIDTH = 15F
 
-class OverlayView : View {
+class OverlayView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null
+) : View(context, attrs) {
     private var transparentBackground: Paint? = null
     private var eraser: Paint? = null
     private var borderPaint: Paint? = null
     private var horizontalMargin = 0f
     private var verticalMargin = 0f
 
-    constructor(context: Context?, @Nullable attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+    private val alphaValue: Int by lazy {
+        resources.getInteger(R.integer.liveness_camerax_overlay_alpha_background)
+    }
+
+    private val sweepAngle: Float by lazy {
+        TypedValue().apply {
+            resources.getValue(
+                R.dimen.liveness_camerax_overlay_sweep_angle,
+                this,
+                true
+            )
+        }.float
+    }
+
+    init {
         setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
 
@@ -49,12 +57,12 @@ class OverlayView : View {
         transparentBackground?.let { canvas.drawRect(rect, it) }
         borderPaint?.let {
             canvas.drawArc(
-                createRectF(), 0F, SWEEP_ANGLE, true, it
+                createRectF(), 0F, sweepAngle, true, it
             )
         }
         eraser?.let {
             canvas.drawArc(
-                createRectF(), 0F, SWEEP_ANGLE, true, it
+                createRectF(), 0F, sweepAngle, true, it
             )
         }
     }
@@ -69,22 +77,28 @@ class OverlayView : View {
     )
 
     fun init(
-        @ColorRes borderColor: Int = R.color.black,
-        horizontalMargin: Float = HORIZONTAL_MARGIN,
-        verticalMargin: Float = VERTICAL_MARGIN
+        @ColorRes borderColorRes: Int = R.color.liveness_camerax_overlay_border,
+        @ColorRes backgroundColorRes: Int = R.color.liveness_camerax_overlay_background,
+        @DimenRes strokeWidthRes: Int = R.dimen.liveness_camerax_overlay_border_stroke,
+        @DimenRes horizontalMarginRes: Int = R.dimen.liveness_camerax_overlay_horizontal_margin,
+        @DimenRes verticalMarginRes: Int = R.dimen.liveness_camerax_overlay_vertical_margin,
     ) {
-        this.horizontalMargin = horizontalMargin
-        this.verticalMargin = verticalMargin
+        this.horizontalMargin = TypedValue().apply {
+            resources.getValue(horizontalMarginRes, this, true)
+        }.float
+        this.verticalMargin = TypedValue().apply {
+            resources.getValue(verticalMarginRes, this, true)
+        }.float
 
         transparentBackground = Paint().apply {
-            color = Color.BLACK
-            alpha = ALPHA_VALUE
+            color = resources.getColor(backgroundColorRes)
+            alpha = alphaValue
             style = Paint.Style.FILL
         }
 
         borderPaint = Paint().apply {
-            color = resources.getColor(borderColor)
-            strokeWidth = STROKE_WIDTH
+            color = resources.getColor(borderColorRes)
+            strokeWidth = resources.getDimension(strokeWidthRes)
             style = Paint.Style.STROKE
         }
 

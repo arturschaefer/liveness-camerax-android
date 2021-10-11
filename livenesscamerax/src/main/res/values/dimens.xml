@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="liveness_camerax_overlay_border_stroke">5dp</dimen>
+    <item name="liveness_camerax_overlay_horizontal_margin" format="float" type="dimen">150.0</item>
+    <item name="liveness_camerax_overlay_vertical_margin" format="float" type="dimen">400.0</item>
+    <item name="liveness_camerax_overlay_sweep_angle" format="float" type="dimen">360.0</item>
+</resources>
