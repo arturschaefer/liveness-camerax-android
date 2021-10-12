@@ -10,7 +10,7 @@
 # The workflow should work with no modifications, but you might like to use a
 # later version of the Detekt CLI by modifing the $DETEKT_RELEASE_TAG
 # environment variable.
-name: Scan with Detekt
+name: Detekt analysis
 
 on:
   # Triggers the workflow on push or pull request events but only for default and protected branches
@@ -40,7 +40,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
 
     # Gets the download URL associated with the $DETEKT_RELEASE_TAG
     - name: Get Detekt download URL
@@ -101,3 +101,17 @@ jobs:
         # Path to SARIF file relative to the root of the repository
         sarif_file: ${{ github.workspace }}/detekt.sarif.json
         checkout_path: ${{ github.workspace }}
+
+    - name: Set Up JDK              // 1
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Change wrapper permissions  // 2
+      run: chmod +x ./gradlew
+
+    - name: Run Tests                   // 3
+      run: ./gradlew test
+
+    - name: Build Project               // 4
+      run: ./gradlew assemble
