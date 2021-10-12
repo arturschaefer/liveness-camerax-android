@@ -1,18 +1,6 @@
 name: Pre-Merge Actions
 
-on: 
-  pull_request:
-    branches:
-      - main
-      - develop
-      - feat/*
-      - fix/*
-      - refactor/*
-      - chore/*
-  pushes:
-    branches:
-      - main
-      - develop
+on: [push, pull_request]
 
 jobs:
   build:
