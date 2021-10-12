@@ -5,7 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LivenessCameraXResult(
-    val createdByUser: PhotoResult,
-    val createdBySteps: List<PhotoResult>
+    val createdByUser: PhotoResult? = null,
+    val createdBySteps: List<PhotoResult>? = null,
+    val error: LivenessCameraXError? = null,
 ): Parcelable
 

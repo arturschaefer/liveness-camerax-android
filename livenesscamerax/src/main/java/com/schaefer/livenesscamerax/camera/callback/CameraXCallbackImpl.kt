@@ -5,7 +5,7 @@ import java.io.File
 
 internal class CameraXCallbackImpl(
     val onImageSavedAction: (PhotoResult) -> Unit,
-    val onErrorAction: (Throwable) -> Unit
+    val onErrorAction: (Exception) -> Unit
 ) : CameraXCallback {
 
     override fun onSuccess(photoFile: File) {
