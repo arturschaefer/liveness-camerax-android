@@ -24,14 +24,14 @@ internal class LivenessViewModel(
     private val resourcesProvider: ResourcesProvider,
     private val livenessChecker: LivenessChecker,
 ) : ReactiveViewModel<LivenessViewState, LivenessAction>(LivenessViewState()) {
-    //UI State
+    // UI State
     private val _state = LivenessViewState()
 
-    //Steps
+    // Steps
     private var originalRequestedSteps = LinkedList<StepLiveness>()
     private var requestedSteps = LinkedList<StepLiveness>()
 
-    //Faces
+    // Faces
     private val facesMutable = MutableLiveData<List<FaceResult>>()
     private val moreThanOneFace = MutableLiveData<Boolean>()
     private val atLeastOneEyeIsOpen = MutableLiveData<Boolean>()
@@ -124,7 +124,6 @@ internal class LivenessViewModel(
         }
     }
 
-
     private fun isLuminosityGood(luminosity: Float?): Boolean {
         return luminosity?.let { it > MINIMUM_LUMINOSITY }.orFalse()
     }
@@ -136,7 +135,7 @@ internal class LivenessViewModel(
     }
 
     private fun removeCurrentStep() {
-        //TODO get picture after complete each step
+        // TODO get picture after complete each step
         requestedSteps.pop()
         setState(_state.livenessMessage(getMessage()))
     }

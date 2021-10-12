@@ -19,13 +19,11 @@ import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameP
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
 import com.schaefer.livenesscamerax.camera.provider.AnalyzerProviderImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
-import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
 import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -35,24 +33,22 @@ import java.util.concurrent.Future
 internal class CameraXImpl(
     private val settings: CameraSettings,
     private val cameraXCallback: CameraXCallback,
-    private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
+    private val fileProvider: FileProvider,
+    private val context: Context,
 ) : CameraX, DefaultLifecycleObserver {
 
     private val cameraExecutors by lazy { Executors.newSingleThreadExecutor() }
-    private val imageCapture by lazy { ImageCapture.Builder().build().apply {
-        targetRotation = Surface.ROTATION_0
-    } }
+    private val imageCapture by lazy {
+        ImageCapture.Builder().build().apply {
+            targetRotation = Surface.ROTATION_0
+        }
+    }
     private val frameFaceProcessor: FaceFrameProcessor by lazy {
         FaceFrameProcessorImpl(lifecycleOwner.lifecycleScope)
     }
     private val luminosityFrameProcessor: LuminosityFrameProcessor by lazy {
         LuminosityFrameProcessorImpl()
-    }
-
-    //TODO create a fileProvider factory
-    private val fileProvider: FileProvider by lazy {
-        FileProviderImpl(settings, context)
     }
 
     private val analyzerProvider by lazy {
@@ -69,7 +65,7 @@ internal class CameraXImpl(
     //region - Camera settings and creators
     override fun getFacesFlowable() = frameFaceProcessor.getData()
 
-    override fun getLuminosity(): Flow<Double> = luminosityFrameProcessor.getLuminosity()
+    override fun getLuminosity() = luminosityFrameProcessor.getLuminosity()
 
     override fun getLifecycleObserver() = this
 
@@ -129,7 +125,9 @@ internal class CameraXImpl(
     ) {
         camera = null
         val cameraProvider = cameraProviderFuture.get()
-        val preview = createPreview(previewView.surfaceProvider)
+        val preview = Preview.Builder().build().also { preview ->
+            preview.setSurfaceProvider(previewView.surfaceProvider)
+        }
         val analyzer = analyzerProvider.createAnalyzer()
         val cameraSelector = settings.getCameraSelector()
 
@@ -152,12 +150,6 @@ internal class CameraXImpl(
                     ex.cause
                 )
             )
-        }
-    }
-
-    private fun createPreview(surfaceProvider: Preview.SurfaceProvider): Preview {
-        return Preview.Builder().build().also { preview ->
-            preview.setSurfaceProvider(surfaceProvider)
         }
     }
     //endregion
