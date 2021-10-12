@@ -17,7 +17,7 @@ on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop, refactor/**, chore/**, fix/** ]
+    branches: [ main, develop, 'refactor/**', 'fix/**', 'core/**', 'feat/**' ]
   schedule:
      - cron: '39 20 * * 1'
 
