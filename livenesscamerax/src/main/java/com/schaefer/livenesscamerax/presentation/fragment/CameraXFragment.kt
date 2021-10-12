@@ -28,6 +28,7 @@ import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.RESULT_LIVENESS_CAMERAX
+import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXError
 import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
@@ -38,7 +39,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -165,9 +165,23 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         binding.tvStepText.isVisible = true
     }
 
-    private fun handlePictureError(throwable: Throwable) {
-        Timber.e(throwable)
-        // TODO display some message and return error to activity
+    // TODO simulate this scenario
+    private fun handlePictureError(throwable: Exception) {
+        requireActivity().setResult(RESULT_CANCELED,
+            Intent().apply
+            {
+                putExtra(
+                    RESULT_LIVENESS_CAMERAX,
+                    LivenessCameraXResult(
+                        error = LivenessCameraXError(
+                            message = throwable.message.orEmpty(),
+                            cause = throwable.cause.toString(),
+                            exception = throwable
+                        )
+                    )
+                )
+            })
+        requireActivity().finish()
     }
 
     private fun handlePictureSuccess(photoResult: PhotoResult) {
