@@ -1,17 +1,19 @@
 package com.schaefer.livenesscamerax.camera.callback
 
-import android.content.Context
+import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 
-class CameraXCallbackImpl(
-    val onImageSavedAction: (File) -> Unit,
-    val onErrorAction: (Throwable) -> Unit,
-    val context: Context,
+internal class CameraXCallbackImpl(
+    val onImageSavedAction: (PhotoResult) -> Unit,
+    val onErrorAction: (Throwable) -> Unit
 ) : CameraXCallback {
 
     override fun onSuccess(photoFile: File) {
         onImageSavedAction(
-            photoFile
+            PhotoResult(
+                createdAt = photoFile.name,
+                filePath = photoFile.path
+            )
         )
     }
 

@@ -1,6 +1,7 @@
 package com.schaefer.livenesscamerax.camera
 
 import android.content.Context
+import android.view.Surface
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -16,14 +17,13 @@ import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.provider.AnalyzerProvider
+import com.schaefer.livenesscamerax.camera.provider.AnalyzerProviderImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
 import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -33,20 +33,26 @@ import java.util.concurrent.Future
 internal class CameraXImpl(
     private val settings: CameraSettings,
     private val cameraXCallback: CameraXCallback,
-    private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
+    private val fileProvider: FileProvider,
+    private val context: Context,
 ) : CameraX, DefaultLifecycleObserver {
 
     private val cameraExecutors by lazy { Executors.newSingleThreadExecutor() }
-    private val imageCapture by lazy { ImageCapture.Builder().build() }
+    private val imageCapture by lazy {
+        ImageCapture.Builder().build().apply {
+            targetRotation = Surface.ROTATION_0
+        }
+    }
     private val frameFaceProcessor: FaceFrameProcessor by lazy {
         FaceFrameProcessorImpl(lifecycleOwner.lifecycleScope)
     }
     private val luminosityFrameProcessor: LuminosityFrameProcessor by lazy {
         LuminosityFrameProcessorImpl()
     }
+
     private val analyzerProvider by lazy {
-        AnalyzerProvider(
+        AnalyzerProviderImpl(
             settings.analyzeType,
             lifecycleOwner,
             cameraExecutors,
@@ -59,9 +65,13 @@ internal class CameraXImpl(
     //region - Camera settings and creators
     override fun getFacesFlowable() = frameFaceProcessor.getData()
 
-    override fun getLuminosity(): Flow<Double> = luminosityFrameProcessor.getLuminosity()
+    override fun getLuminosity() = luminosityFrameProcessor.getLuminosity()
 
     override fun getLifecycleObserver() = this
+
+    override fun deleteAllPictures() = fileProvider.deleteStorageFiles()
+
+    override fun getAllPictures(): List<String> = fileProvider.getPathOfAllPhotos()
 
     override fun startCamera(cameraPreviewView: PreviewView) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -76,7 +86,7 @@ internal class CameraXImpl(
 
     override fun takePicture() {
         // Create time-stamped output file to hold the image
-        val photoFile = FileProvider(settings, context).getPhotoFile()
+        val photoFile = fileProvider.getPhotoFile()
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -115,7 +125,9 @@ internal class CameraXImpl(
     ) {
         camera = null
         val cameraProvider = cameraProviderFuture.get()
-        val preview = createPreview(previewView.surfaceProvider)
+        val preview = Preview.Builder().build().also { preview ->
+            preview.setSurfaceProvider(previewView.surfaceProvider)
+        }
         val analyzer = analyzerProvider.createAnalyzer()
         val cameraSelector = settings.getCameraSelector()
 
@@ -138,12 +150,6 @@ internal class CameraXImpl(
                     ex.cause
                 )
             )
-        }
-    }
-
-    private fun createPreview(surfaceProvider: Preview.SurfaceProvider): Preview {
-        return Preview.Builder().build().also { preview ->
-            preview.setSurfaceProvider(surfaceProvider)
         }
     }
     //endregion
