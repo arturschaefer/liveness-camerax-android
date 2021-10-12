@@ -13,7 +13,7 @@ private const val PLAN_Y = 0
 private const val WHITE = 0xFF
 
 @ExperimentalCoroutinesApi
-class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
+internal class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
 
     private val publishSubject = BroadcastChannel<Double>(Channel.BUFFERED)
 

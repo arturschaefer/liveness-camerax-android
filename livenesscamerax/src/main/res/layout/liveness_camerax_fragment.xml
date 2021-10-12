@@ -9,9 +9,8 @@
         android:id="@+id/cvMessages"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:minHeight="50dp"
+        android:layout_marginStart="@dimen/liveness_camerax_card_message_margin"
+        android:layout_marginEnd="@dimen/liveness_camerax_card_message_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -21,7 +20,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:minHeight="@dimen/liveness_camerax_card_message_min_height">
 
             <TextView
                 android:id="@+id/tvStepText"
@@ -45,10 +45,9 @@
 
     <Button
         android:id="@+id/camera_capture_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="50dp"
-        android:elevation="2dp"
+        android:layout_width="@dimen/liveness_camerax_button_take_picture_width"
+        android:layout_height="@dimen/liveness_camerax_button_take_picture_height"
+        android:layout_marginBottom="@dimen/liveness_camerax_button_take_picture_margin"
         android:scaleType="fitCenter"
         android:text="@string/liveness_camerax_take_photo"
         android:visibility="gone"
