@@ -1,6 +1,7 @@
 package com.schaefer.livenesscamerax.camera
 
 import android.content.Context
+import android.view.Surface
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -16,8 +17,9 @@ import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.provider.AnalyzerProvider
+import com.schaefer.livenesscamerax.camera.provider.AnalyzerProviderImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
+import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
 import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
@@ -38,15 +40,23 @@ internal class CameraXImpl(
 ) : CameraX, DefaultLifecycleObserver {
 
     private val cameraExecutors by lazy { Executors.newSingleThreadExecutor() }
-    private val imageCapture by lazy { ImageCapture.Builder().build() }
+    private val imageCapture by lazy { ImageCapture.Builder().build().apply {
+        targetRotation = Surface.ROTATION_0
+    } }
     private val frameFaceProcessor: FaceFrameProcessor by lazy {
         FaceFrameProcessorImpl(lifecycleOwner.lifecycleScope)
     }
     private val luminosityFrameProcessor: LuminosityFrameProcessor by lazy {
         LuminosityFrameProcessorImpl()
     }
+
+    //TODO create a fileProvider factory
+    private val fileProvider: FileProvider by lazy {
+        FileProviderImpl(settings, context)
+    }
+
     private val analyzerProvider by lazy {
-        AnalyzerProvider(
+        AnalyzerProviderImpl(
             settings.analyzeType,
             lifecycleOwner,
             cameraExecutors,
@@ -63,6 +73,10 @@ internal class CameraXImpl(
 
     override fun getLifecycleObserver() = this
 
+    override fun deleteAllPictures() = fileProvider.deleteStorageFiles()
+
+    override fun getAllPictures(): List<String> = fileProvider.getPathOfAllPhotos()
+
     override fun startCamera(cameraPreviewView: PreviewView) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         val runnableSetup = Runnable {
@@ -76,7 +90,7 @@ internal class CameraXImpl(
 
     override fun takePicture() {
         // Create time-stamped output file to hold the image
-        val photoFile = FileProvider(settings, context).getPhotoFile()
+        val photoFile = fileProvider.getPhotoFile()
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
