@@ -14,7 +14,7 @@ private const val PLANE_Y = 0
 private const val PLANE_VU = 2
 private const val INTEGER_255 = 0xFF
 private const val LUMINOSITY_ZERO = 0F
-private const val QUALITY = 50
+private const val QUALITY = 90
 
 @RequiresApi(Build.VERSION_CODES.KITKAT)
 internal fun Image.toBitmap(): Bitmap {

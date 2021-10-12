@@ -24,9 +24,11 @@ import com.schaefer.livenesscamerax.core.extensions.snack
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
-import com.schaefer.livenesscamerax.domain.model.LivenessType
-import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.PHOTO_PATH_RESULT
+import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
+import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.RESULT_LIVENESS_CAMERAX
+import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
+import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessAction
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
@@ -36,7 +38,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -49,10 +50,15 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         LivenessViewModelFactory(ResourcesProviderImpl(requireContext()), LivenessCheckerImpl())
     }
 
+    //TODO create a fileProvider factory
     private val cameraXCallback: CameraXCallback by lazy {
-        CameraXCallbackImpl(::handlePictureSuccess, ::handlePictureError, requireContext())
+        CameraXCallbackImpl(
+            ::handlePictureSuccess,
+            ::handlePictureError
+        )
     }
 
+    //TODO get CameraSettings from bundle
     private val cameraX: CameraX by lazy {
         CameraXImpl(
             settings = CameraSettings(),
@@ -101,30 +107,25 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
 
     private fun setupObservers() {
         livenessViewModel.state.observe(viewLifecycleOwner) { state ->
-            Timber.d(state.messageLiveness)
             binding.tvStepText.text = state.messageLiveness
+            binding.cameraCaptureButton.isVisible = state.isButtonEnabled
         }
 
         livenessViewModel.action.observe(viewLifecycleOwner) { action ->
             when (action) {
-                LivenessAction.LivenessCompleted -> {
-                    activity?.let {
-                        it.setResult(RESULT_OK)
-                        it.finish()
-                    }
-                }
                 LivenessAction.LivenessCanceled -> {
+                    //TODO call this case on canceled or error
                     activity?.setResult(RESULT_CANCELED)
                 }
-                is LivenessAction.EnableCameraButton -> {
-                    binding.cameraCaptureButton.isVisible = true
+                is LivenessAction.LivenessCompleted -> {
+
                 }
             }
         }
     }
 
     private fun setupLivenessSteps() {
-        val validateRequested: List<LivenessType> =
+        val validateRequested: List<StepLiveness> =
             activity?.intent?.extras?.getParcelableArrayList(
                 REQUEST_CODE_LIVENESS
             ) ?: arrayListOf()
@@ -165,11 +166,21 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         // TODO display some message and return error to activity
     }
 
-    private fun handlePictureSuccess(file: File) {
+    private fun handlePictureSuccess(photoResult: PhotoResult) {
+        val livenessPhotoResult = LivenessCameraXResult(
+            createdByUser = photoResult,
+            createdBySteps = cameraX.getAllPictures().map {
+                PhotoResult(
+                    createdAt = it,
+                    filePath = it
+                )
+            }
+        )
+
         requireActivity().setResult(
             RESULT_OK,
             Intent().apply {
-                putExtra(PHOTO_PATH_RESULT, file.path)
+                putExtra(RESULT_LIVENESS_CAMERAX, livenessPhotoResult)
             }
         )
         requireActivity().finish()
