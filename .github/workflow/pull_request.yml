@@ -1,6 +1,11 @@
 name: Pre-Merge Actions
 
-on: pull_request
+on: 
+  pull_request:
+    branches:
+      - main
+      - develop
+      - *
 
 jobs:
   build:
