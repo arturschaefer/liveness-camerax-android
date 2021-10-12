@@ -17,7 +17,7 @@ import com.schaefer.livenesscamerax.R
 private const val WIDTH_FACTOR = 2.9f
 private const val HEIGHT_FACTOR = 12f
 
-class OverlayView @JvmOverloads constructor(
+internal class OverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : View(context, attrs) {

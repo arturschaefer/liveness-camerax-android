@@ -3,7 +3,7 @@ package com.schaefer.livenesscamerax.camera.callback
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 
-class CameraXCallbackImpl(
+internal class CameraXCallbackImpl(
     val onImageSavedAction: (PhotoResult) -> Unit,
     val onErrorAction: (Throwable) -> Unit
 ) : CameraXCallback {
