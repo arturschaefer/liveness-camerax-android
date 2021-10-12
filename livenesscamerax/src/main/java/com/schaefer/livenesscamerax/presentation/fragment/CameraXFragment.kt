@@ -18,6 +18,7 @@ import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
+import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
@@ -50,7 +51,6 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         LivenessViewModelFactory(ResourcesProviderImpl(requireContext()), LivenessCheckerImpl())
     }
 
-    //TODO create a fileProvider factory
     private val cameraXCallback: CameraXCallback by lazy {
         CameraXCallbackImpl(
             ::handlePictureSuccess,
@@ -58,13 +58,17 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         )
     }
 
-    //TODO get CameraSettings from bundle
+    // TODO get CameraSettings from bundle
+    // TODO create a fileProvider factory
+    private val cameraSettings = CameraSettings()
+
     private val cameraX: CameraX by lazy {
         CameraXImpl(
-            settings = CameraSettings(),
+            settings = cameraSettings,
             cameraXCallback = cameraXCallback,
             lifecycleOwner = this,
-            context = requireContext()
+            context = requireContext(),
+            fileProvider = FileProviderImpl(cameraSettings, requireContext())
         )
     }
 
@@ -114,11 +118,11 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         livenessViewModel.action.observe(viewLifecycleOwner) { action ->
             when (action) {
                 LivenessAction.LivenessCanceled -> {
-                    //TODO call this case on canceled or error
+                    // TODO call this case on canceled or error
                     activity?.setResult(RESULT_CANCELED)
                 }
                 is LivenessAction.LivenessCompleted -> {
-
+                    // TODO
                 }
             }
         }

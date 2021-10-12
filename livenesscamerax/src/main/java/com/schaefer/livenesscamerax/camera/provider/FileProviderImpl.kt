@@ -35,8 +35,7 @@ internal class FileProviderImpl(
     }
 
     override fun getPathOfAllPhotos(): List<String> {
-       return File(provideOutputDirectory().path)
-            .walkTopDown()
+        return File(provideOutputDirectory().path).walkTopDown()
             .filter { it.isDirectory.not() }
             .map { it.path }
             .toList()

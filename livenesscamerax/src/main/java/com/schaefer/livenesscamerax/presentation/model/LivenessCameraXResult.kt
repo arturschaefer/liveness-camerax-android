@@ -8,3 +8,4 @@ data class LivenessCameraXResult(
     val createdByUser: PhotoResult,
     val createdBySteps: List<PhotoResult>
 ): Parcelable
+
