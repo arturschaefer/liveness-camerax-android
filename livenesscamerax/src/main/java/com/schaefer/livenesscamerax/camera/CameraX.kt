@@ -12,4 +12,6 @@ internal interface CameraX {
     fun getFacesFlowable(): Flow<List<FaceResult>>
     fun getLuminosity(): Flow<Double>
     fun getLifecycleObserver(): LifecycleObserver
+    fun deleteAllPictures(): Boolean
+    fun getAllPictures(): List<String>
 }

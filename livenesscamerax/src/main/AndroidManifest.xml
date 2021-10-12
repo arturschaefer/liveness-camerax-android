@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.schaefer.livenesscamerax">
 
     <uses-feature android:name="android.hardware.camera.any" />
@@ -9,6 +8,7 @@
     <application android:name=".CameraXApplication">
         <activity
             android:name=".presentation.LivenessCameraXActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
     </application>
 </manifest>
