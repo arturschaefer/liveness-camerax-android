@@ -10,7 +10,7 @@
 # The workflow should work with no modifications, but you might like to use a
 # later version of the Detekt CLI by modifing the $DETEKT_RELEASE_TAG
 # environment variable.
-name: Detekt analysis
+name: Quality Analysis
 
 on:
   # Triggers the workflow on push or pull request events but only for default and protected branches
