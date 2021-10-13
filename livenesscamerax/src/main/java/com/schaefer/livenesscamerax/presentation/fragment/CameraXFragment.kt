@@ -1,9 +1,6 @@
 package com.schaefer.livenesscamerax.presentation.fragment
 
 import android.Manifest
-import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +9,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
+import com.schaefer.livenesscamerax.core.extensions.observeOnce
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
@@ -27,23 +24,23 @@ import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
-import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.RESULT_LIVENESS_CAMERAX
-import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXError
 import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
-import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessAction
+import com.schaefer.livenesscamerax.presentation.provider.SendResult
+import com.schaefer.livenesscamerax.presentation.provider.SendResultImpl
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
 @FlowPreview
 @InternalCoroutinesApi
 internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
+
     private var _binding: LivenessCameraxFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -52,10 +49,11 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     }
 
     private val cameraXCallback: CameraXCallback by lazy {
-        CameraXCallbackImpl(
-            ::handlePictureSuccess,
-            ::handlePictureError
-        )
+        CameraXCallbackImpl(::handlePictureSuccess, sendResult::error)
+    }
+
+    private val sendResult: SendResult by lazy {
+        SendResultImpl(requireActivity())
     }
 
     // TODO get CameraSettings from bundle
@@ -104,28 +102,8 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupObservers()
         setupLivenessSteps()
         cameraPermission.launch(cameraManifest)
-    }
-
-    private fun setupObservers() {
-        livenessViewModel.state.observe(viewLifecycleOwner) { state ->
-            binding.tvStepText.text = state.messageLiveness
-            binding.cameraCaptureButton.isVisible = state.isButtonEnabled
-        }
-
-        livenessViewModel.action.observe(viewLifecycleOwner) { action ->
-            when (action) {
-                LivenessAction.LivenessCanceled -> {
-                    // TODO call this case on canceled or error
-                    activity?.setResult(RESULT_CANCELED)
-                }
-                is LivenessAction.LivenessCompleted -> {
-                    // TODO
-                }
-            }
-        }
     }
 
     private fun setupLivenessSteps() {
@@ -137,23 +115,39 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     }
 
     private fun permissionIsGranted() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            startCamera()
+        startCamera()
+        startObservers()
+    }
+
+    private fun startObservers() {
+        lifecycle.addObserver(cameraX.getLifecycleObserver())
+
+        livenessViewModel.state.observe(viewLifecycleOwner) { state ->
+            binding.tvStepText.text = state.messageLiveness
+            binding.cameraCaptureButton.isVisible = state.isButtonEnabled
         }
+
+        livenessViewModel.apply {
+            observeFacesDetection(cameraX.getFacesFlowable())
+            observeLuminosity(cameraX.getLuminosity())
+            hasBlinked.observeOnce(viewLifecycleOwner) { takePicture(it) }
+            hasSmiled.observeOnce(viewLifecycleOwner) { takePicture(it) }
+            hasGoodLuminosity.observeOnce(viewLifecycleOwner) { takePicture(it) }
+            hasHeadMovedLeft.observeOnce(viewLifecycleOwner) { takePicture(it) }
+            hasHeadMovedRight.observeOnce(viewLifecycleOwner) { takePicture(it) }
+            hasHeadMovedCenter.observeOnce(viewLifecycleOwner) { takePicture(it) }
+        }
+    }
+
+    private fun takePicture(requestPicture: Boolean) {
+        if (requestPicture) cameraX.takePicture(false)
     }
 
     private fun startCamera() {
         cameraX.startCamera(binding.viewFinder)
 
-        livenessViewModel.let {
-            it.observeFacesDetection(cameraX.getFacesFlowable())
-            it.observeLuminosity(cameraX.getLuminosity())
-        }
-
-        lifecycle.addObserver(cameraX.getLifecycleObserver())
-
         binding.cameraCaptureButton.setOnClickListener {
-            cameraX.takePicture()
+            cameraX.takePicture(true)
         }
 
         binding.overlayView.apply {
@@ -165,42 +159,14 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         binding.tvStepText.isVisible = true
     }
 
-    // TODO simulate this scenario
-    private fun handlePictureError(throwable: Exception) {
-        requireActivity().setResult(RESULT_CANCELED,
-            Intent().apply
-            {
-                putExtra(
-                    RESULT_LIVENESS_CAMERAX,
-                    LivenessCameraXResult(
-                        error = LivenessCameraXError(
-                            message = throwable.message.orEmpty(),
-                            cause = throwable.cause.toString(),
-                            exception = throwable
-                        )
-                    )
-                )
-            })
-        requireActivity().finish()
-    }
+    private fun handlePictureSuccess(photoResult: PhotoResult, takenByUser: Boolean) {
+        if (takenByUser) {
+            val filesPath = cameraX.getAllPictures()
+            val livenessPhotoResult = LivenessCameraXResult(photoResult, filesPath)
 
-    private fun handlePictureSuccess(photoResult: PhotoResult) {
-        val livenessPhotoResult = LivenessCameraXResult(
-            createdByUser = photoResult,
-            createdBySteps = cameraX.getAllPictures().map {
-                PhotoResult(
-                    createdAt = it,
-                    filePath = it
-                )
-            }
-        )
-
-        requireActivity().setResult(
-            RESULT_OK,
-            Intent().apply {
-                putExtra(RESULT_LIVENESS_CAMERAX, livenessPhotoResult)
-            }
-        )
-        requireActivity().finish()
+            sendResult.success(livenessPhotoResult)
+        } else {
+            Timber.d(photoResult.toString())
+        }
     }
 }
