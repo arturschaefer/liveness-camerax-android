@@ -1,10 +1,11 @@
 package com.schaefer.livenesscamerax.presentation.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.core.extensions.orFalse
-import com.schaefer.livenesscamerax.core.viewmodel.ReactiveViewModel
+import com.schaefer.livenesscamerax.core.viewmodel.StateViewModel
 import com.schaefer.livenesscamerax.domain.logic.LivenessChecker
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
@@ -23,7 +24,7 @@ private const val MINIMUM_LUMINOSITY = 100
 internal class LivenessViewModel(
     private val resourcesProvider: ResourcesProvider,
     private val livenessChecker: LivenessChecker,
-) : ReactiveViewModel<LivenessViewState, LivenessAction>(LivenessViewState()) {
+) : StateViewModel<LivenessViewState>(LivenessViewState()) {
     // UI State
     private val _state = LivenessViewState()
 
@@ -32,11 +33,21 @@ internal class LivenessViewModel(
     private var requestedSteps = LinkedList<StepLiveness>()
 
     // Faces
-    private val facesMutable = MutableLiveData<List<FaceResult>>()
-    private val moreThanOneFace = MutableLiveData<Boolean>()
-    private val atLeastOneEyeIsOpen = MutableLiveData<Boolean>()
-    private val hasBlinked = MutableLiveData<Boolean>()
-    private val hasSmiled = MutableLiveData<Boolean>()
+    private var facesMutable = listOf<FaceResult>()
+    private var moreThanOneFaceMutable = false
+    private var atLeastOneEyeIsOpenMutable = false
+    private val hasBlinkedMutable = MutableLiveData<Boolean>()
+    val hasBlinked: LiveData<Boolean> = hasBlinkedMutable
+    private val hasSmiledMutable = MutableLiveData<Boolean>()
+    val hasSmiled: LiveData<Boolean> = hasSmiledMutable
+    private val luminosityMutable = MutableLiveData<Boolean>()
+    val hasGoodLuminosity: LiveData<Boolean> = luminosityMutable
+    private val headMovementLeftMutable = MutableLiveData<Boolean>()
+    val hasHeadMovedLeft: LiveData<Boolean> = headMovementLeftMutable
+    private val headMovementRightMutable = MutableLiveData<Boolean>()
+    val hasHeadMovedRight: LiveData<Boolean> = headMovementRightMutable
+    private val headMovementCenterMutable = MutableLiveData<Boolean>()
+    val hasHeadMovedCenter: LiveData<Boolean> = headMovementCenterMutable
 
     // TODO handle error
     fun observeFacesDetection(facesFlowable: Flow<List<FaceResult>>) {
@@ -57,21 +68,22 @@ internal class LivenessViewModel(
     }
 
     private fun handleFaces(listFaceResult: List<FaceResult>) {
-        facesMutable.value = listFaceResult
-        moreThanOneFace.value = livenessChecker.hasMoreThanOneFace(listFaceResult)
+        facesMutable = listFaceResult
+        moreThanOneFaceMutable = livenessChecker.hasMoreThanOneFace(listFaceResult)
 
-        if (livenessChecker.hasMoreThanOneFace(listFaceResult).not()) {
+        if (!moreThanOneFaceMutable) {
             setState(_state.livenessMessage(getMessage()))
 
             val face = listFaceResult.first()
             checkFaceLiveness(face)
 
-            //TODO handle accessibility of people with no eye
-            atLeastOneEyeIsOpen.value = livenessChecker.validateAtLeastOneEyeIsOpen(face)
+            // TODO handle accessibility of people with one single eye
+            atLeastOneEyeIsOpenMutable = livenessChecker.validateAtLeastOneEyeIsOpen(face)
         } else {
-            requestedSteps.clear()
-            requestedSteps.addAll(originalRequestedSteps)
-
+            requestedSteps.apply {
+                clear()
+                addAll(originalRequestedSteps)
+            }
             setState(_state.livenessError(resourcesProvider.getString(R.string.liveness_camerax_message_alone)))
         }
     }
@@ -83,27 +95,31 @@ internal class LivenessViewModel(
                 StepLiveness.STEP_LUMINOSITY -> {
                     if (isLuminosityGood(face.luminosity)) {
                         removeCurrentStep()
+                        luminosityMutable.value = true
                     }
                 }
                 StepLiveness.STEP_HEAD_FRONTAL -> {
                     if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
                         removeCurrentStep()
+                        headMovementCenterMutable.value = true
                     }
                 }
                 StepLiveness.STEP_HEAD_LEFT -> {
                     livenessChecker.validateHeadMovement(face, HeadMovement.LEFT) {
                         removeCurrentStep()
+                        headMovementLeftMutable.value = it
                     }
                 }
                 StepLiveness.STEP_HEAD_RIGHT -> {
                     livenessChecker.validateHeadMovement(face, HeadMovement.RIGHT) {
                         removeCurrentStep()
+                        headMovementRightMutable.value = it
                     }
                 }
                 StepLiveness.STEP_SMILE -> {
                     livenessChecker.checkSmile(face.smilingProbability) {
                         removeCurrentStep()
-                        hasSmiled.value = it
+                        hasSmiledMutable.value = it
                     }
                 }
                 StepLiveness.STEP_BLINK -> {
@@ -111,8 +127,8 @@ internal class LivenessViewModel(
                         face.leftEyeOpenProbability,
                         face.rightEyeOpenProbability
                     ) {
-                        hasBlinked.value = it
                         removeCurrentStep()
+                        hasBlinkedMutable.value = it
                     }
                 }
                 null -> {

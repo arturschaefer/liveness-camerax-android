@@ -4,16 +4,17 @@ import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 
 internal class CameraXCallbackImpl(
-    val onImageSavedAction: (PhotoResult) -> Unit,
+    val onImageSavedAction: (PhotoResult, Boolean) -> Unit,
     val onErrorAction: (Exception) -> Unit
 ) : CameraXCallback {
 
-    override fun onSuccess(photoFile: File) {
+    override fun onSuccess(photoFile: File, takenByUser: Boolean) {
         onImageSavedAction(
             PhotoResult(
                 createdAt = photoFile.name,
                 filePath = photoFile.path
-            )
+            ),
+            takenByUser
         )
     }
 

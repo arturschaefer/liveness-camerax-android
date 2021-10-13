@@ -36,7 +36,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private val livenessList = arrayListOf(
-        StepLiveness.STEP_SMILE
+        StepLiveness.STEP_HEAD_LEFT,
+        StepLiveness.STEP_BLINK
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
