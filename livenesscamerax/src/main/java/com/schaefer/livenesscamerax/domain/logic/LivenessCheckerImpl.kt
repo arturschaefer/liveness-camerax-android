@@ -54,10 +54,10 @@ internal class LivenessCheckerImpl : LivenessChecker {
     override fun validateHeadMovement(
         face: FaceResult,
         headMovement: HeadMovement,
-        removeCurrentStep: () -> Unit
+        removeCurrentStep: (Boolean) -> Unit
     ) {
         if (detectEulerYMovement(face.headEulerAngleY) == headMovement) {
-            removeCurrentStep()
+            removeCurrentStep(true)
         }
     }
 

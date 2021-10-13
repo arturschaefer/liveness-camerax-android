@@ -84,7 +84,7 @@ internal class CameraXImpl(
         )
     }
 
-    override fun takePicture() {
+    override fun takePicture(takenByUser: Boolean) {
         // Create time-stamped output file to hold the image
         val photoFile = fileProvider.getPhotoFile()
 
@@ -98,7 +98,7 @@ internal class CameraXImpl(
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    cameraXCallback.onSuccess(photoFile)
+                    cameraXCallback.onSuccess(photoFile, takenByUser)
                 }
 
                 override fun onError(exception: ImageCaptureException) {
