@@ -23,7 +23,7 @@ internal interface LivenessChecker {
     fun validateHeadMovement(
         face: FaceResult,
         headMovement: HeadMovement,
-        removeCurrentStep: () -> Unit
+        removeCurrentStep: (Boolean) -> Unit
     )
 
     fun validateAtLeastOneEyeIsOpen(face: FaceResult): Boolean
