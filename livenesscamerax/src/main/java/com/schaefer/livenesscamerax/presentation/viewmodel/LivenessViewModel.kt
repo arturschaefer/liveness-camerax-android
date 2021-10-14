@@ -151,7 +151,6 @@ internal class LivenessViewModel(
     }
 
     private fun removeCurrentStep() {
-        // TODO get picture after complete each step
         requestedSteps.pop()
         setState(_state.livenessMessage(getMessage()))
     }

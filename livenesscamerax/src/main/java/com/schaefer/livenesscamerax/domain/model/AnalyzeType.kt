@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.domain.model
 
-internal enum class AnalyzeType {
+enum class AnalyzeType {
     FACE_PROCESSOR,
     LUMINOSITY,
     COMPLETE,

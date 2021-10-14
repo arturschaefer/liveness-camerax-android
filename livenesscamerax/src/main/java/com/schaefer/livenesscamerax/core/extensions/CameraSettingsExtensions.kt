@@ -2,7 +2,7 @@ package com.schaefer.livenesscamerax.core.extensions
 
 import androidx.camera.core.CameraSelector
 import com.schaefer.livenesscamerax.domain.model.CameraLens
-import com.schaefer.livenesscamerax.domain.model.CameraSettings
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 
 internal fun CameraSettings.getCameraSelector(): CameraSelector {
     return when (this.cameraLens) {
