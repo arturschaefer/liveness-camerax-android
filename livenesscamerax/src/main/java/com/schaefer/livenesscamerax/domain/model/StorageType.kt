@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.domain.model
 
-internal enum class StorageType {
+enum class StorageType {
     INTERNAL,
     EXTERNAL
 }

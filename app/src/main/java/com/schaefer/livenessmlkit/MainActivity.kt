@@ -10,8 +10,8 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity
-import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.RESULT_LIVENESS_CAMERAX
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
 
@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
             binding.ivResult.isVisible = true
         }
     }
+
     private val livenessList = arrayListOf(
         StepLiveness.STEP_HEAD_LEFT,
         StepLiveness.STEP_BLINK
@@ -51,7 +52,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchLivenessActivity() {
         val livenessIntent = Intent(this, LivenessCameraXActivity::class.java).apply {
-            putParcelableArrayListExtra(REQUEST_CODE_LIVENESS, livenessList)
+            putParcelableArrayListExtra(LivenessCameraXActivity.EXTRAS_LIVENESS_STEPS, livenessList)
+            putExtra(LivenessCameraXActivity.EXTRAS_LIVENESS_CAMERA_SETTINGS, CameraSettings())
         }
 
         binding.btnStartLiveness.setOnClickListener {

@@ -16,7 +16,8 @@ class LivenessCameraXActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val REQUEST_CODE_LIVENESS = "liveness"
+        const val EXTRAS_LIVENESS_STEPS = "liveness_camerax_steps"
+        const val EXTRAS_LIVENESS_CAMERA_SETTINGS = "liveness_camerax_camera_settings"
         const val RESULT_LIVENESS_CAMERAX = "liveness_result_list_of_pictures"
     }
 }
