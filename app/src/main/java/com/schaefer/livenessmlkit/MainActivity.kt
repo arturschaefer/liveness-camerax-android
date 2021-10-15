@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnStartLiveness.setOnClickListener {
             startLiveness.launch(
                 LivenessCameraXActivity.getLivenessIntent(
-                    livenessStepList = livenessStepList,
+                    cameraSettings = CameraSettings(livenessStepList = livenessStepList),
                     context = this
                 )
             )

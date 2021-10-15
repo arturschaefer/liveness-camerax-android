@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.schaefer.livenesscamerax.domain.model.AnalyzeType
 import com.schaefer.livenesscamerax.domain.model.CameraLens
 import com.schaefer.livenesscamerax.domain.model.CaptureQuality
+import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.domain.model.StorageType
 import kotlinx.parcelize.Parcelize
 
@@ -17,4 +18,8 @@ data class CameraSettings(
     val isZoomEnabled: Boolean = false,
     val isAutoFocusEnabled: Boolean = true,
     val analyzeType: AnalyzeType = AnalyzeType.FACE_PROCESSOR,
+    val livenessStepList: ArrayList<StepLiveness> = arrayListOf(
+        StepLiveness.STEP_LUMINOSITY,
+        StepLiveness.STEP_SMILE
+    )
 ) : Parcelable

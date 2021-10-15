@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxActivityBinding
-import com.schaefer.livenesscamerax.domain.model.StepLiveness
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessCameraX
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessCameraXImpl
 
@@ -25,8 +25,10 @@ class LivenessCameraXActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun getLivenessIntent(livenessStepList: ArrayList<StepLiveness>, context: Context) =
-            livenessCameraX.getIntent(livenessStepList, context)
+        fun getLivenessIntent(
+            cameraSettings: CameraSettings = CameraSettings(),
+            context: Context
+        ) = livenessCameraX.getIntent(cameraSettings, context)
 
         fun getLivenessDataResult(result: ActivityResult) =
             livenessCameraX.getDataResult(result)
