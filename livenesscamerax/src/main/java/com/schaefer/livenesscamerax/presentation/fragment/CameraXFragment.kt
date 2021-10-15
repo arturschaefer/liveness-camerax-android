@@ -23,9 +23,9 @@ import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
-import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
 import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
+import com.schaefer.livenesscamerax.presentation.navigation.REQUEST_CODE_LIVENESS
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
 import com.schaefer.livenesscamerax.presentation.provider.SendResult
 import com.schaefer.livenesscamerax.presentation.provider.SendResultImpl
