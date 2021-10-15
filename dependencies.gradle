@@ -7,7 +7,7 @@ ext.versions = [
         buildToolsVersion      : '31.0.0',
 
         //gradle plugins
-        gradle                 : '4.1.3',
+        gradle                 : '7.0.2',
         kotlin                 : '1.5.31',
         jvmTarget              : '1.8',
         ktx                    : '1.6.0',
