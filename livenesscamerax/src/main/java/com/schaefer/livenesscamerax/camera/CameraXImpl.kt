@@ -21,7 +21,8 @@ import com.schaefer.livenesscamerax.camera.provider.AnalyzerProviderImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
 import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
-import com.schaefer.livenesscamerax.domain.model.CameraSettings
+import com.schaefer.livenesscamerax.core.extensions.orFalse
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
@@ -109,7 +110,9 @@ internal class CameraXImpl(
     }
 
     override fun enableFlash(enabled: Boolean) {
-        // TODO
+        camera?.let {
+            if (it.cameraInfo.hasFlashUnit().orFalse()) it.cameraControl.enableTorch(enabled)
+        }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {

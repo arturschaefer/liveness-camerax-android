@@ -14,6 +14,7 @@ import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
+import com.schaefer.livenesscamerax.camera.provider.FileProvider
 import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
 import com.schaefer.livenesscamerax.core.extensions.observeOnce
 import com.schaefer.livenesscamerax.core.extensions.orFalse
@@ -21,11 +22,9 @@ import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
-import com.schaefer.livenesscamerax.domain.model.CameraSettings
-import com.schaefer.livenesscamerax.domain.model.StepLiveness
-import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity.Companion.REQUEST_CODE_LIVENESS
-import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
+import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
 import com.schaefer.livenesscamerax.presentation.provider.SendResult
 import com.schaefer.livenesscamerax.presentation.provider.SendResultImpl
@@ -56,9 +55,16 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         SendResultImpl(requireActivity())
     }
 
-    // TODO get CameraSettings from bundle
     // TODO create a fileProvider factory
-    private val cameraSettings = CameraSettings()
+    private val fileProvider: FileProvider by lazy {
+        FileProviderImpl(cameraSettings, requireContext())
+    }
+
+    private val cameraSettings: CameraSettings by lazy {
+        activity?.intent?.extras?.getParcelable(
+            EXTRAS_LIVENESS_CAMERA_SETTINGS
+        ) ?: CameraSettings()
+    }
 
     private val cameraX: CameraX by lazy {
         CameraXImpl(
@@ -66,7 +72,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             cameraXCallback = cameraXCallback,
             lifecycleOwner = this,
             context = requireContext(),
-            fileProvider = FileProviderImpl(cameraSettings, requireContext())
+            fileProvider = fileProvider
         )
     }
 
@@ -102,16 +108,8 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupLivenessSteps()
+        livenessViewModel.setupSteps(cameraSettings.livenessStepList)
         cameraPermission.launch(cameraManifest)
-    }
-
-    private fun setupLivenessSteps() {
-        val validateRequested: List<StepLiveness> =
-            activity?.intent?.extras?.getParcelableArrayList(
-                REQUEST_CODE_LIVENESS
-            ) ?: arrayListOf()
-        livenessViewModel.setupSteps(validateRequested)
     }
 
     private fun permissionIsGranted() {
@@ -162,9 +160,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private fun handlePictureSuccess(photoResult: PhotoResult, takenByUser: Boolean) {
         if (takenByUser) {
             val filesPath = cameraX.getAllPictures()
-            val livenessPhotoResult = LivenessCameraXResult(photoResult, filesPath)
-
-            sendResult.success(livenessPhotoResult)
+            sendResult.success(photoResult, filesPath)
         } else {
             Timber.d(photoResult.toString())
         }

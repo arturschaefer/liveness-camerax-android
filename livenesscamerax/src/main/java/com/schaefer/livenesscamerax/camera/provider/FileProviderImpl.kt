@@ -2,8 +2,8 @@ package com.schaefer.livenesscamerax.camera.provider
 
 import android.content.Context
 import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.StorageType
+import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.text.SimpleDateFormat

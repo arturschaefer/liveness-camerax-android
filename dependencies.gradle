@@ -1,21 +1,16 @@
 ext.versions = [
-        minSdk                 : 21,
-        compileSdk             : 30,
-        targetSdk              : 30,
+        minSdk                 : 19,
+        compileSdk             : 31,
+        targetSdk              : 31,
         versionCode            : 1,
         versionName            : '1.0.0',
-        buildToolsVersion      : '30.0.2',
+        buildToolsVersion      : '31.0.0',
 
         //gradle plugins
-        gradle                 : '4.1.3',
+        gradle                 : '7.0.2',
         kotlin                 : '1.5.31',
         jvmTarget              : '1.8',
         ktx                    : '1.6.0',
-
-        //Dependency Injection
-        hilt                   : '2.35',
-        hilt_lifecycle         : '1.0.0',
-        hilt_compiler          : '1.0.0',
 
         //CameraX
         cameraX                : '1.0.2',
@@ -34,6 +29,9 @@ ext.versions = [
 
         //Glide
         glide                  : '4.12.0',
+
+        //Apache
+        apacheCommons          : '1.3.2',
 
         //Tests
         junit                  : '4.+',
