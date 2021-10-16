@@ -9,12 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: dalezak/github-commit-to-trello-card@main
+      - uses: kagof/trello-link-github-action@v1.1.0
         with:
-          trello-api-key: ${{ secrets.TRELLO_API_KEY }}
-          trello-auth-token: ${{ secrets.TRELLO_AUTH_1_KEY }}
-          trello-board-id: ${{ secrets.TRELLO_BOARD_ID }}
-          trello-card-action: "Attachment"
-          trello-list-name-commit: "Doing"
-          trello-list-name-pr-open: "Reviewing"
-          trello-list-name-pr-closed: "Testing"
+          board-identifier: "${{ secrets.TRELLO_BOARD_ID }}"
+          trello-token: "${{ secrets.TRELLO_API_KEY }}"
+          marker: 'LIVE-'
