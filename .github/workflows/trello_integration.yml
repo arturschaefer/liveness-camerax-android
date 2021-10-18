@@ -1,6 +1,6 @@
 name: GitHub Commit To Trello Comment
 
-on: [push, pull_request]
+on: push
 
 jobs:
   build:
