@@ -16,15 +16,19 @@ import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
 import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
+import com.schaefer.livenesscamerax.camera.provider.RotateImageProvider
+import com.schaefer.livenesscamerax.camera.provider.RotateImageProviderImpl
 import com.schaefer.livenesscamerax.core.extensions.observeOnce
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
+import com.schaefer.livenesscamerax.domain.logic.LivenessChecker
 import com.schaefer.livenesscamerax.domain.logic.LivenessCheckerImpl
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
+import com.schaefer.livenesscamerax.presentation.provider.ResourcesProvider
 import com.schaefer.livenesscamerax.presentation.provider.ResourcesProviderImpl
 import com.schaefer.livenesscamerax.presentation.provider.SendResult
 import com.schaefer.livenesscamerax.presentation.provider.SendResultImpl
@@ -43,12 +47,24 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private var _binding: LivenessCameraxFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val livenessViewModel: LivenessViewModel by viewModels {
-        LivenessViewModelFactory(ResourcesProviderImpl(requireContext()), LivenessCheckerImpl())
+    private val resourceProvider: ResourcesProvider by lazy {
+        ResourcesProviderImpl(requireContext())
     }
-
+    private val livenessChecker: LivenessChecker by lazy {
+        LivenessCheckerImpl()
+    }
+    private val livenessViewModel: LivenessViewModel by viewModels {
+        LivenessViewModelFactory(resourceProvider, livenessChecker)
+    }
+    private val rotateImageProvider: RotateImageProvider by lazy {
+        RotateImageProviderImpl(requireContext())
+    }
     private val cameraXCallback: CameraXCallback by lazy {
-        CameraXCallbackImpl(::handlePictureSuccess, sendResult::error)
+        CameraXCallbackImpl(
+            ::handlePictureSuccess,
+            sendResult::error,
+            rotateImageProvider,
+        )
     }
 
     private val sendResult: SendResult by lazy {

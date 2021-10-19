@@ -52,6 +52,7 @@ internal class FileProviderImpl(
         return context.getDir(DIR_NAME, Context.MODE_PRIVATE)
     }
 
+    // TODO fix context.externalMediaDirs
     private fun getExternalDirectory(): File {
         val mediaDir = context.externalMediaDirs?.firstOrNull()?.let {
             File(it, context.getString(R.string.liveness_camerax_app_name)).apply { mkdirs() }

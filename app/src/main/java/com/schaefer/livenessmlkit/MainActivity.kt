@@ -32,9 +32,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private val livenessStepList = arrayListOf(
-        StepLiveness.STEP_HEAD_LEFT,
-        StepLiveness.STEP_HEAD_RIGHT,
-        StepLiveness.STEP_BLINK,
         StepLiveness.STEP_SMILE
     )
 
