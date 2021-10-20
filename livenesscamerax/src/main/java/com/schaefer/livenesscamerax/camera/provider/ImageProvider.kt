@@ -2,7 +2,7 @@ package com.schaefer.livenesscamerax.camera.provider
 
 import java.io.File
 
-internal interface RotateImageProvider {
+internal interface ImageProvider {
 
     fun editPhotoFile(photoFile: File)
 }

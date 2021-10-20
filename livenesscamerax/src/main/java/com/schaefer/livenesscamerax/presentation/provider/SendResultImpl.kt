@@ -34,6 +34,7 @@ internal class SendResultImpl(
                     putExtra(RESULT_LIVENESS_CAMERAX, livenessCameraXResult)
                 }
             )
+            finish()
         }
     }
 }
