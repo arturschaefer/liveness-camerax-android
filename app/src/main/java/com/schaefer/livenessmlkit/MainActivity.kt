@@ -2,6 +2,7 @@ package com.schaefer.livenessmlkit
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,16 +20,24 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
 
-        if (result.resultCode == Activity.RESULT_OK) {
-            val livenessCameraXResult = LivenessCameraXActivity.getLivenessDataResult(result)
+        when (result.resultCode) {
+            Activity.RESULT_OK -> {
+                val livenessCameraXResult = LivenessCameraXActivity.getLivenessDataResult(result)
 
-            Glide
-                .with(this)
-                .load(livenessCameraXResult?.createdByUser?.filePath)
-                .centerCrop()
-                .into(binding.ivResult)
+                Glide
+                    .with(this)
+                    .load(livenessCameraXResult?.createdByUser?.filePath)
+                    .centerCrop()
+                    .into(binding.ivResult)
 
-            binding.ivResult.isVisible = true
+                binding.ivResult.isVisible = true
+            }
+            else -> {
+                Log.e(
+                    this.localClassName,
+                    LivenessCameraXActivity.getLivenessDataResult(result).toString()
+                )
+            }
         }
     }
     private val livenessStepList = arrayListOf(
