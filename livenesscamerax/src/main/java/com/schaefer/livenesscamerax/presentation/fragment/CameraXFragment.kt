@@ -16,8 +16,9 @@ import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
 import com.schaefer.livenesscamerax.camera.provider.FileProvider
 import com.schaefer.livenesscamerax.camera.provider.FileProviderImpl
-import com.schaefer.livenesscamerax.camera.provider.RotateImageProvider
-import com.schaefer.livenesscamerax.camera.provider.RotateImageProviderImpl
+import com.schaefer.livenesscamerax.camera.provider.ImageProvider
+import com.schaefer.livenesscamerax.camera.provider.ImageProviderImpl
+import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.observeOnce
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
@@ -56,14 +57,14 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private val livenessViewModel: LivenessViewModel by viewModels {
         LivenessViewModelFactory(resourceProvider, livenessChecker)
     }
-    private val rotateImageProvider: RotateImageProvider by lazy {
-        RotateImageProviderImpl(requireContext())
+    private val imageProvider: ImageProvider by lazy {
+        ImageProviderImpl(requireContext())
     }
     private val cameraXCallback: CameraXCallback by lazy {
         CameraXCallbackImpl(
             ::handlePictureSuccess,
             sendResult::error,
-            rotateImageProvider,
+            imageProvider,
         )
     }
 
@@ -126,6 +127,11 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
 
         livenessViewModel.setupSteps(cameraSettings.livenessStepList)
         cameraPermission.launch(cameraManifest)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        sendResult.error(LivenessCameraXException.ContextSwitchException())
     }
 
     private fun permissionIsGranted() {
