@@ -2,11 +2,15 @@ package com.schaefer.livenessmlkit
 
 import android.app.Activity
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
+import com.google.android.material.chip.Chip
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
@@ -30,12 +34,8 @@ class MainActivity : AppCompatActivity() {
             binding.ivResult.isVisible = true
         }
     }
-    private val livenessStepList = arrayListOf(
-        StepLiveness.STEP_HEAD_LEFT,
-        StepLiveness.STEP_HEAD_RIGHT,
-        StepLiveness.STEP_BLINK,
-        StepLiveness.STEP_SMILE
-    )
+
+    private val mutableStepList = arrayListOf<StepLiveness>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +48,42 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchLivenessActivity() {
         binding.btnStartLiveness.setOnClickListener {
-            startLiveness.launch(
-                LivenessCameraXActivity.getLivenessIntent(
-                    livenessStepList = livenessStepList,
-                    context = this
-                )
-            )
+            getSelectedSteps()
+            when (mutableStepList.isEmpty()) {
+                true -> showToast()
+                false ->
+                    startLiveness.launch(
+                        LivenessCameraXActivity.getLivenessIntent(
+                            livenessStepList = mutableStepList,
+                            context = this
+                        )
+                    )
+            }
         }
+    }
+
+    private fun getSelectedSteps() {
+        mutableStepList.clear()
+        binding.chipGroupSteps.forEach { chip ->
+            (chip as Chip).takeIf { it.isChecked }?.let {
+                mutableStepList.add(it.mapToLivenessStep())
+            }
+        }
+    }
+
+    private fun View.mapToLivenessStep(): StepLiveness {
+        return when (this.id) {
+            R.id.chipStepSmile -> StepLiveness.STEP_SMILE
+            R.id.chipStepBlink -> StepLiveness.STEP_BLINK
+            else -> StepLiveness.STEP_LUMINOSITY
+        }
+    }
+
+    private fun showToast() {
+        Toast.makeText(
+            this,
+            "You need to select at least one step",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
