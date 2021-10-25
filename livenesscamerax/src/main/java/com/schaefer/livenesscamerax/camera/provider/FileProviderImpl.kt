@@ -3,7 +3,6 @@ package com.schaefer.livenesscamerax.camera.provider
 import android.content.Context
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.domain.model.StorageType
-import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.text.SimpleDateFormat
@@ -14,7 +13,7 @@ private const val SUFFIX_PHOTO_FILE = ".jpg"
 private const val DIR_NAME = "photos_liveness"
 
 internal class FileProviderImpl(
-    private val cameraSettings: CameraSettings,
+    private val storageType: StorageType,
     private val context: Context
 ) : FileProvider {
 
@@ -43,7 +42,7 @@ internal class FileProviderImpl(
 
     private fun provideSimpleDateFormatter() = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
 
-    private fun provideOutputDirectory(): File = when (cameraSettings.storageType) {
+    private fun provideOutputDirectory(): File = when (storageType) {
         StorageType.INTERNAL -> getInternalStorage()
         StorageType.EXTERNAL -> getExternalDirectory()
     }
@@ -53,10 +52,10 @@ internal class FileProviderImpl(
     }
 
     private fun getExternalDirectory(): File {
-        val mediaDir = context.externalMediaDirs?.firstOrNull()?.let {
+        val mediaDir = context.filesDir.let {
             File(it, context.getString(R.string.liveness_camerax_app_name)).apply { mkdirs() }
         }
-        return if (mediaDir != null && mediaDir.exists())
+        return if (mediaDir.exists())
             mediaDir else context.filesDir
     }
 }
