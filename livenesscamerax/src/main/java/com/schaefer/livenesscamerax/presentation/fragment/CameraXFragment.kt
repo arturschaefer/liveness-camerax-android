@@ -72,9 +72,8 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         SendResultImpl(requireActivity())
     }
 
-    // TODO create a fileProvider factory
     private val fileProvider: FileProvider by lazy {
-        FileProviderImpl(cameraSettings, requireContext())
+        FileProviderImpl(cameraSettings.storageType, requireContext())
     }
 
     private val cameraSettings: CameraSettings by lazy {
