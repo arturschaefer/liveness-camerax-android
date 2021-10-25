@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
+import com.schaefer.livenesscamerax.domain.model.StorageType
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
@@ -64,8 +65,11 @@ class MainActivity : AppCompatActivity() {
                 false ->
                     startLiveness.launch(
                         LivenessCameraXActivity.getLivenessIntent(
-                            cameraSettings = CameraSettings(livenessStepList = mutableStepList),
-                            context = this
+                            cameraSettings = CameraSettings(
+                                livenessStepList = mutableStepList,
+                                storageType = StorageType.EXTERNAL
+                            ),
+                            context = this,
                         )
                     )
             }
