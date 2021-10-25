@@ -1,6 +1,5 @@
 package com.schaefer.livenesscamerax.camera
 
-import android.content.Context
 import android.view.Surface
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture
@@ -17,11 +16,12 @@ import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.provider.AnalyzerProviderImpl
-import com.schaefer.livenesscamerax.camera.provider.FileProvider
+import com.schaefer.livenesscamerax.camera.provider.analyzer.AnalyzerProviderImpl
+import com.schaefer.livenesscamerax.camera.provider.file.FileProvider
 import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
 import com.schaefer.livenesscamerax.core.extensions.orFalse
+import com.schaefer.livenesscamerax.di.LibraryModule.application
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -36,7 +36,6 @@ internal class CameraXImpl(
     private val cameraXCallback: CameraXCallback,
     private val lifecycleOwner: LifecycleOwner,
     private val fileProvider: FileProvider,
-    private val context: Context,
 ) : CameraX, DefaultLifecycleObserver {
 
     private val cameraExecutors by lazy { Executors.newSingleThreadExecutor() }
@@ -75,13 +74,13 @@ internal class CameraXImpl(
     override fun getAllPictures(): List<String> = fileProvider.getPathOfAllPhotos()
 
     override fun startCamera(cameraPreviewView: PreviewView) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(application)
         val runnableSetup = Runnable {
             setupCamera(cameraProviderFuture, cameraPreviewView, lifecycleOwner)
         }
         cameraProviderFuture.addListener(
             runnableSetup,
-            ContextCompat.getMainExecutor(context)
+            ContextCompat.getMainExecutor(application)
         )
     }
 
@@ -96,7 +95,7 @@ internal class CameraXImpl(
         // been taken
         imageCapture.takePicture(
             outputOptions,
-            ContextCompat.getMainExecutor(context),
+            ContextCompat.getMainExecutor(application),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     cameraXCallback.onSuccess(photoFile, takenByUser)
