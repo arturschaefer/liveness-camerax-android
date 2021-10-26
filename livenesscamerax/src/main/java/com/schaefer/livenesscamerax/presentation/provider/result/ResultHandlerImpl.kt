@@ -5,7 +5,7 @@ import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.RESULT_LIVENESS_CAMERAX
 
-internal class ResultProviderImpl : ResultProvider {
+internal class ResultHandlerImpl : ResultHandler {
 
     override fun success(photoResult: PhotoResult, filesPath: List<String>): Intent {
         val livenessCameraXResult = LivenessCameraXResult(photoResult, filesPath)
