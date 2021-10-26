@@ -4,12 +4,12 @@ import android.content.Context
 import com.schaefer.livenesscamerax.core.factory.Factory
 import com.schaefer.livenesscamerax.domain.model.StorageType
 
-internal class FileProviderFactory(
+internal class FileHandlerFactory(
     private val storageType: StorageType,
     private val context: Context
-) : Factory<FileProvider> {
+) : Factory<FileHandler> {
 
-    override fun create(): FileProvider {
-        return FileProviderImpl(storageType, context)
+    override fun create(): FileHandler {
+        return FileHandlerImpl(storageType, context)
     }
 }

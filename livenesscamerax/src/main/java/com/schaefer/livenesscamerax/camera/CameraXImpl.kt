@@ -10,23 +10,19 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.provider.analyzer.AnalyzerProviderImpl
-import com.schaefer.livenesscamerax.camera.provider.file.FileProvider
+import com.schaefer.livenesscamerax.camera.provider.analyzer.AnalyzeProvider
+import com.schaefer.livenesscamerax.camera.provider.file.FileHandler
 import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.di.LibraryModule.application
+import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
-import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 @FlowPreview
@@ -35,43 +31,35 @@ internal class CameraXImpl(
     private val settings: CameraSettings,
     private val cameraXCallback: CameraXCallback,
     private val lifecycleOwner: LifecycleOwner,
-    private val fileProvider: FileProvider,
+    private val fileHandler: FileHandler,
 ) : CameraX, DefaultLifecycleObserver {
 
-    private val cameraExecutors by lazy { Executors.newSingleThreadExecutor() }
     private val imageCapture by lazy {
         ImageCapture.Builder().build().apply {
             targetRotation = Surface.ROTATION_0
         }
     }
-    private val frameFaceProcessor: FaceFrameProcessor by lazy {
-        FaceFrameProcessorImpl(lifecycleOwner.lifecycleScope)
+    private val cameraExecutor: ExecutorService by lazy {
+        container.provideSingleThreadExecutor
     }
-    private val luminosityFrameProcessor: LuminosityFrameProcessor by lazy {
-        LuminosityFrameProcessorImpl()
+    private val faceFrameProcessor by lazy {
+        container.provideFaceFrameProcessor(lifecycleOwner)
     }
-
-    private val analyzerProvider by lazy {
-        AnalyzerProviderImpl(
-            settings.analyzeType,
-            lifecycleOwner,
-            cameraExecutors,
-            frameFaceProcessor,
-            luminosityFrameProcessor
-        )
+    private val luminosityFrameProcessor by lazy {
+        container.provideLuminosityFrameProcessor
     }
     private var camera: Camera? = null
 
     //region - Camera settings and creators
-    override fun getFacesFlowable() = frameFaceProcessor.getData()
+    override fun getFacesFlowable() = faceFrameProcessor.getData()
 
     override fun getLuminosity() = luminosityFrameProcessor.getLuminosity()
 
     override fun getLifecycleObserver() = this
 
-    override fun deleteAllPictures() = fileProvider.deleteStorageFiles()
+    override fun deleteAllPictures() = fileHandler.deleteStorageFiles()
 
-    override fun getAllPictures(): List<String> = fileProvider.getPathOfAllPhotos()
+    override fun getAllPictures(): List<String> = fileHandler.getPathOfAllPhotos()
 
     override fun startCamera(cameraPreviewView: PreviewView) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(application)
@@ -86,7 +74,7 @@ internal class CameraXImpl(
 
     override fun takePicture(takenByUser: Boolean) {
         // Create time-stamped output file to hold the image
-        val photoFile = fileProvider.getPhotoFile()
+        val photoFile = fileHandler.getPhotoFile()
 
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
@@ -115,7 +103,7 @@ internal class CameraXImpl(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        cameraExecutors.shutdown()
+        cameraExecutor.shutdown()
         super.onDestroy(owner)
     }
 
@@ -130,7 +118,9 @@ internal class CameraXImpl(
         val preview = Preview.Builder().build().also { preview ->
             preview.setSurfaceProvider(previewView.surfaceProvider)
         }
-        val analyzer = analyzerProvider.createAnalyzer()
+        val analyzer = AnalyzeProvider.Builder(lifecycleOwner).apply {
+            analyzeType = settings.analyzeType
+        }.build()
         val cameraSelector = settings.getCameraSelector()
 
         try {

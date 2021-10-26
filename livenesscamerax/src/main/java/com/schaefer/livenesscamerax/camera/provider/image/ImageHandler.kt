@@ -2,7 +2,7 @@ package com.schaefer.livenesscamerax.camera.provider.image
 
 import java.io.File
 
-internal interface ImageProvider {
+internal interface ImageHandler {
 
     fun editPhotoFile(photoFile: File)
 }

@@ -12,10 +12,10 @@ private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 private const val SUFFIX_PHOTO_FILE = ".jpg"
 private const val DIR_NAME = "photos_liveness"
 
-internal class FileProviderImpl(
+internal class FileHandlerImpl(
     private val storageType: StorageType,
     private val context: Context
-) : FileProvider {
+) : FileHandler {
 
     init {
         deleteStorageFiles()

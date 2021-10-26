@@ -24,7 +24,7 @@ private const val ORIENTATION_270 = 270F
 private const val MARSHMALLOW = 23
 private const val IMAGE_COMPRESS_QUALITY = 80
 
-internal class ImageProviderImpl(private val context: Context) : ImageProvider {
+internal class ImageHandlerImpl(private val context: Context) : ImageHandler {
 
     override fun editPhotoFile(photoFile: File) {
         runCatching {
