@@ -1,8 +1,8 @@
-package com.schaefer.livenesscamerax.camera.provider
+package com.schaefer.livenesscamerax.camera.provider.file
 
 import java.io.File
 
-internal interface FileProvider {
+internal interface FileHandler {
     fun getPhotoFile(): File
     fun deleteStorageFiles(): Boolean
     fun getPathOfAllPhotos(): List<String>

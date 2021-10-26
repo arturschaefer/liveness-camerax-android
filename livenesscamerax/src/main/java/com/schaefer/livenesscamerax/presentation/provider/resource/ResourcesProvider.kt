@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.presentation.provider
+package com.schaefer.livenesscamerax.presentation.provider.resource
 
 internal interface ResourcesProvider {
     fun getString(resourceIdentifier: Int, vararg arguments: Any = arrayOf()): String

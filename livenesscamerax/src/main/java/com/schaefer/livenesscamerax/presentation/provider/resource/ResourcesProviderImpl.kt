@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.presentation.provider
+package com.schaefer.livenesscamerax.presentation.provider.resource
 
 import android.content.Context
 import androidx.annotation.ArrayRes

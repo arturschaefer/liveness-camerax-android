@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxActivityBinding
+import com.schaefer.livenesscamerax.di.LibraryModule
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessCameraX
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessCameraXImpl
@@ -22,6 +23,8 @@ class LivenessCameraXActivity : AppCompatActivity() {
 
         binding = LivenessCameraxActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        LibraryModule.initializeDI(application)
     }
 
     companion object {
