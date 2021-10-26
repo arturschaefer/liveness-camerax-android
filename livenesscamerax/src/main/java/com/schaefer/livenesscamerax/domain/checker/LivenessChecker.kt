@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.domain.logic
+package com.schaefer.livenesscamerax.domain.checker
 
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement

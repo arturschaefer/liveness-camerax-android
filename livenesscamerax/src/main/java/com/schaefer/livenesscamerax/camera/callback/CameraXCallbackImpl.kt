@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.camera.callback
 
-import com.schaefer.livenesscamerax.camera.provider.ImageProvider
+import com.schaefer.livenesscamerax.camera.provider.image.ImageProvider
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 

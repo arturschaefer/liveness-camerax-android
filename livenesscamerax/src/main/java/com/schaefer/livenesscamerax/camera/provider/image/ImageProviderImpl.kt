@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera.provider
+package com.schaefer.livenesscamerax.camera.provider.image
 
 import android.content.Context
 import android.graphics.Bitmap

@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera.provider
+package com.schaefer.livenesscamerax.camera.provider.analyzer
 
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.LifecycleOwner
