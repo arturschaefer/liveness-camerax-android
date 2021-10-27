@@ -17,12 +17,10 @@ import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.getCameraSelector
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.di.LibraryModule.application
-import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
 
 @FlowPreview
@@ -39,21 +37,19 @@ internal class CameraXImpl(
             targetRotation = Surface.ROTATION_0
         }
     }
-    private val cameraExecutor: ExecutorService by lazy {
-        container.provideSingleThreadExecutor
-    }
-    private val faceFrameProcessor by lazy {
-        container.provideFaceFrameProcessor(lifecycleOwner)
-    }
-    private val luminosityFrameProcessor by lazy {
-        container.provideLuminosityFrameProcessor
+
+//    private val cameraExecutorService: ExecutorService by lazy { container.provideCameraExecutor() }
+    private val analyzerProvider by lazy {
+        AnalyzeProvider.Builder(lifecycleOwner).apply {
+            analyzeType = settings.analyzeType
+        }
     }
     private var camera: Camera? = null
 
     //region - Camera settings and creators
-    override fun getFacesFlowable() = faceFrameProcessor.getData()
+    override fun getFacesFlowable() = analyzerProvider.faceFrameProcessor.getData()
 
-    override fun getLuminosity() = luminosityFrameProcessor.getLuminosity()
+    override fun getLuminosity() = analyzerProvider.luminosityFrameProcessor.getLuminosity()
 
     override fun getLifecycleObserver() = this
 
@@ -103,7 +99,7 @@ internal class CameraXImpl(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        cameraExecutor.shutdown()
+        analyzerProvider.cameraExecutors.shutdown()
         super.onDestroy(owner)
     }
 
@@ -118,9 +114,7 @@ internal class CameraXImpl(
         val preview = Preview.Builder().build().also { preview ->
             preview.setSurfaceProvider(previewView.surfaceProvider)
         }
-        val analyzer = AnalyzeProvider.Builder(lifecycleOwner).apply {
-            analyzeType = settings.analyzeType
-        }.build()
+        val analyzer = analyzerProvider.build()
         val cameraSelector = settings.getCameraSelector()
 
         try {

@@ -1,12 +1,9 @@
 package com.schaefer.livenessmlkit
 
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
@@ -14,38 +11,14 @@ import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.domain.model.StorageType
-import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
+import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private val startLiveness = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-
-        when (result.resultCode) {
-            Activity.RESULT_OK -> {
-                val livenessCameraXResult = LivenessCameraXActivity.getLivenessDataResult(result)
-
-                Glide
-                    .with(this)
-                    .load(livenessCameraXResult?.createdByUser?.filePath)
-                    .centerCrop()
-                    .into(binding.ivResult)
-
-                binding.ivResult.isVisible = true
-            }
-            else -> {
-                Log.e(
-                    this.localClassName,
-                    LivenessCameraXActivity.getLivenessDataResult(result).toString()
-                )
-            }
-        }
-    }
-
+    private val livenessEntryPoint = LivenessEntryPoint
     private val mutableStepList = arrayListOf<StepLiveness>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,15 +36,30 @@ class MainActivity : AppCompatActivity() {
             when (mutableStepList.isEmpty()) {
                 true -> showToast()
                 false ->
-                    startLiveness.launch(
-                        LivenessCameraXActivity.getLivenessIntent(
-                            cameraSettings = CameraSettings(
-                                livenessStepList = mutableStepList,
-                                storageType = StorageType.EXTERNAL
-                            ),
-                            context = this,
-                        )
-                    )
+                    livenessEntryPoint.startLiveness(
+                        cameraSettings = CameraSettings(
+                            livenessStepList = mutableStepList,
+                            storageType = StorageType.INTERNAL
+                        ),
+                        context = this,
+                    ) {
+                        if (it.error == null) {
+                            Glide
+                                .with(this)
+                                .load(it.createdByUser?.filePath)
+                                .centerCrop()
+                                .into(binding.ivResult)
+
+                            binding.ivResult.isVisible = true
+                        } else {
+                            it.error?.let {
+                                Log.e(
+                                    this.localClassName,
+                                    it.toString()
+                                )
+                            }
+                        }
+                    }
             }
         }
     }

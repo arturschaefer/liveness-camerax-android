@@ -8,7 +8,10 @@ internal sealed class LivenessCameraXException : Exception() {
     ) : LivenessCameraXException()
 
     data class ContextSwitchException(
-        override val message: String? = ErrorsTypes.CONTEXT_SWITCHED.name,
-        override val cause: Throwable? = null
+        override val message: String? = ErrorsTypes.CONTEXT_SWITCHED.name
+    ) : LivenessCameraXException()
+
+    data class UserCanceledException(
+        override val message: String? = ErrorsTypes.USER_CANCELED.name
     ) : LivenessCameraXException()
 }

@@ -49,10 +49,10 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             EXTRAS_LIVENESS_CAMERA_SETTINGS
         ) ?: CameraSettings()
     }
-    private val resourceProvider: ResourcesProvider by lazy { container.resourceProvider }
-    private val livenessChecker: LivenessChecker by lazy { container.provideLivenessChecker }
-    private val resultHandler: ResultHandler by lazy { container.provideResultHandler }
-    private val imageHandler: ImageHandler by lazy { container.provideImageHandler }
+    private val resourceProvider: ResourcesProvider by lazy { container.resourceProvider() }
+    private val livenessChecker: LivenessChecker by lazy { container.provideLivenessChecker() }
+    private val resultHandler: ResultHandler by lazy { container.provideResultHandler() }
+    private val imageHandler: ImageHandler by lazy { container.provideImageHandler() }
     private val fileHandler: FileHandler by lazy {
         container.provideFileHandler(cameraSettings.storageType)
     }
@@ -67,6 +67,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             imageHandler,
         )
     }
+
     private val cameraX: CameraX by lazy {
         CameraXImpl(
             settings = cameraSettings,
@@ -114,7 +115,11 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
 
     override fun onStop() {
         super.onStop()
-        resultHandler.error(LivenessCameraXException.ContextSwitchException())
+
+        if (!requireActivity().isFinishing) {
+            resultHandler.error(LivenessCameraXException.ContextSwitchException())
+            requireActivity().finish()
+        }
     }
 
     private fun permissionIsGranted() {
@@ -166,6 +171,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         if (takenByUser) {
             val filesPath = cameraX.getAllPictures()
             resultHandler.success(photoResult, filesPath)
+            requireActivity().finish()
         } else {
             Timber.d(photoResult.toString())
         }
