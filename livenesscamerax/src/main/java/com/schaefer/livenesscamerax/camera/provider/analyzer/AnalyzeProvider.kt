@@ -24,7 +24,7 @@ internal class AnalyzeProvider(builder: Builder) {
         var faceFrameProcessor: FaceFrameProcessor =
             container.provideFaceFrameProcessor(lifecycleOwner)
         var luminosityFrameProcessor: LuminosityFrameProcessor =
-            container.provideLuminosityFrameProcessor
+            container.provideLuminosityFrameProcessor()
         var cameraExecutors = container.provideCameraExecutor()
 
         private fun getAnalyzerType() =
