@@ -1,25 +1,20 @@
 package com.schaefer.livenesscamerax.presentation.provider.result
 
-import android.content.Intent
+import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
-import com.schaefer.livenesscamerax.presentation.navigation.RESULT_LIVENESS_CAMERAX
 
 internal class ResultHandlerImpl : ResultHandler {
 
-    override fun success(photoResult: PhotoResult, filesPath: List<String>): Intent {
-        val livenessCameraXResult = LivenessCameraXResult(photoResult, filesPath)
+    private val resultCallback = container.provideLivenessEntryPoint
 
-        return Intent().apply {
-            putExtra(RESULT_LIVENESS_CAMERAX, livenessCameraXResult)
-        }
+    override fun success(photoResult: PhotoResult, filesPath: List<String>) {
+        val livenessCameraXResult = LivenessCameraXResult(photoResult, filesPath)
+        resultCallback.postResultCallback(livenessCameraXResult)
     }
 
-    override fun error(exception: Exception): Intent {
+    override fun error(exception: Exception) {
         val livenessCameraXResult = LivenessCameraXResult(exception)
-
-        return Intent().apply {
-            putExtra(RESULT_LIVENESS_CAMERAX, livenessCameraXResult)
-        }
+        resultCallback.postResultCallback(livenessCameraXResult)
     }
 }
