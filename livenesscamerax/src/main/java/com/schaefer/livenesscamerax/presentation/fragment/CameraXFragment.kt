@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.schaefer.livenesscamerax.BuildConfig
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
@@ -120,6 +121,11 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             resultHandler.error(LivenessCameraXException.ContextSwitchException())
             requireActivity().finish()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (!BuildConfig.DEBUG) fileHandler.deleteStorageFiles()
     }
 
     private fun permissionIsGranted() {
