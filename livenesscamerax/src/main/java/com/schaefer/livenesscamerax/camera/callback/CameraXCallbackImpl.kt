@@ -1,6 +1,7 @@
 package com.schaefer.livenesscamerax.camera.callback
 
 import com.schaefer.livenesscamerax.camera.provider.image.ImageHandler
+import com.schaefer.livenesscamerax.core.extensions.encoderFilePath
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 
@@ -16,7 +17,7 @@ internal class CameraXCallbackImpl(
         onImageSavedAction(
             PhotoResult(
                 createdAt = photoFile.name,
-                filePath = photoFile.path
+                fileBase64 = photoFile.path.encoderFilePath()
             ),
             takenByUser
         )
