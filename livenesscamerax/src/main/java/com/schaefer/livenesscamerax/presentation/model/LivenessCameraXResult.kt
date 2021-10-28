@@ -1,6 +1,7 @@
 package com.schaefer.livenesscamerax.presentation.model
 
 import android.os.Parcelable
+import com.schaefer.livenesscamerax.core.extensions.encoderFilePath
 import com.schaefer.livenesscamerax.core.extensions.getFileNameWithoutExtension
 import kotlinx.parcelize.Parcelize
 
@@ -19,7 +20,7 @@ data class LivenessCameraXResult(
         createdBySteps = filesPath.map { path ->
             PhotoResult(
                 createdAt = path.getFileNameWithoutExtension(),
-                filePath = path
+                fileBase64 = path.encoderFilePath()
             )
         }
     )

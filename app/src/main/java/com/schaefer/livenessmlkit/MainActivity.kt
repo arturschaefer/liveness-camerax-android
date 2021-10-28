@@ -1,6 +1,7 @@
 package com.schaefer.livenessmlkit
 
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -44,9 +45,11 @@ class MainActivity : AppCompatActivity() {
                         context = this,
                     ) {
                         if (it.error == null) {
+                            val imageDecoded =
+                                Base64.decode(it.createdByUser?.fileBase64, Base64.NO_WRAP)
                             Glide
                                 .with(this)
-                                .load(it.createdByUser?.filePath)
+                                .load(imageDecoded)
                                 .centerCrop()
                                 .into(binding.ivResult)
 
