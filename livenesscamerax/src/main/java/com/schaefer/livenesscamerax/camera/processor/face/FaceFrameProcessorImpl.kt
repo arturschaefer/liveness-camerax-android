@@ -8,7 +8,7 @@ import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.face.Face
 import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
 import com.schaefer.livenesscamerax.core.extensions.getLuminosity
-import com.schaefer.livenesscamerax.core.mapper.FaceToFaceResultMapper
+import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,16 +20,10 @@ import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
 internal class FaceFrameProcessorImpl(
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val mapper: FaceToFaceResultMapper,
+    private val detector: VisionFaceDetector,
 ) : FaceFrameProcessor {
-
-    private val mapper: FaceToFaceResultMapper by lazy {
-        FaceToFaceResultMapper()
-    }
-
-    private val detector: VisionFaceDetector by lazy {
-        VisionFaceDetector()
-    }
 
     private val facesBroadcastChannel = BroadcastChannel<List<FaceResult>>(Channel.BUFFERED)
 
@@ -41,14 +35,14 @@ internal class FaceFrameProcessorImpl(
         detector.detect(imageProxy) {
             coroutineScope.launch {
                 facesBroadcastChannel.send(
-                    prepareToPublish(it, imageProxy)
+                    prepareResultWithLuminosity(it, imageProxy)
                 )
             }
         }
     }
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
-    private fun prepareToPublish(
+    private fun prepareResultWithLuminosity(
         listFace: List<Face>,
         imageProxy: ImageProxy
     ): List<FaceResult> = listFace.map { face ->

@@ -5,12 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.core.extensions.orFalse
+import com.schaefer.livenesscamerax.core.resourceprovider.ResourcesProvider
 import com.schaefer.livenesscamerax.core.viewmodel.StateViewModel
-import com.schaefer.livenesscamerax.domain.checker.LivenessChecker
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.HeadMovement
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
-import com.schaefer.livenesscamerax.presentation.provider.resource.ResourcesProvider
+import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepository
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -23,7 +23,7 @@ private const val MINIMUM_LUMINOSITY = 100
 @InternalCoroutinesApi
 internal class LivenessViewModel(
     private val resourcesProvider: ResourcesProvider,
-    private val livenessChecker: LivenessChecker,
+    private val checkLivenessRepository: CheckLivenessRepository,
 ) : StateViewModel<LivenessViewState>(LivenessViewState()) {
     // UI State
     private val _state = LivenessViewState()
@@ -69,7 +69,7 @@ internal class LivenessViewModel(
 
     private fun handleFaces(listFaceResult: List<FaceResult>) {
         facesMutable = listFaceResult
-        moreThanOneFaceMutable = livenessChecker.hasMoreThanOneFace(listFaceResult)
+        moreThanOneFaceMutable = checkLivenessRepository.hasMoreThanOneFace(listFaceResult)
 
         if (!moreThanOneFaceMutable) {
             setState(_state.livenessMessage(getMessage()))
@@ -78,7 +78,7 @@ internal class LivenessViewModel(
             checkFaceLiveness(face)
 
             // TODO handle accessibility of people with one single eye
-            atLeastOneEyeIsOpenMutable = livenessChecker.validateAtLeastOneEyeIsOpen(face)
+            atLeastOneEyeIsOpenMutable = checkLivenessRepository.validateAtLeastOneEyeIsOpen(face)
         } else {
             requestedSteps.apply {
                 clear()
@@ -99,31 +99,31 @@ internal class LivenessViewModel(
                     }
                 }
                 StepLiveness.STEP_HEAD_FRONTAL -> {
-                    if (livenessChecker.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
+                    if (checkLivenessRepository.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
                         removeCurrentStep()
                         headMovementCenterMutable.value = true
                     }
                 }
                 StepLiveness.STEP_HEAD_LEFT -> {
-                    livenessChecker.validateHeadMovement(face, HeadMovement.LEFT) {
+                    checkLivenessRepository.validateHeadMovement(face, HeadMovement.LEFT) {
                         removeCurrentStep()
                         headMovementLeftMutable.value = it
                     }
                 }
                 StepLiveness.STEP_HEAD_RIGHT -> {
-                    livenessChecker.validateHeadMovement(face, HeadMovement.RIGHT) {
+                    checkLivenessRepository.validateHeadMovement(face, HeadMovement.RIGHT) {
                         removeCurrentStep()
                         headMovementRightMutable.value = it
                     }
                 }
                 StepLiveness.STEP_SMILE -> {
-                    livenessChecker.checkSmile(face.smilingProbability) {
+                    checkLivenessRepository.checkSmile(face.smilingProbability) {
                         removeCurrentStep()
                         hasSmiledMutable.value = it
                     }
                 }
                 StepLiveness.STEP_BLINK -> {
-                    livenessChecker.checkBothEyes(
+                    checkLivenessRepository.checkBothEyes(
                         face.leftEyeOpenProbability,
                         face.rightEyeOpenProbability
                     ) {

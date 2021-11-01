@@ -1,7 +1,6 @@
 package com.schaefer.livenesscamerax.core.extensions
 
 import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -33,9 +32,4 @@ internal fun Activity.shouldShowRequest(permission: String): Boolean {
             PermissionsType.BLOCKED_OR_NEVER_ASKED -> true
         }
     }
-}
-
-internal fun Activity.sendResultAndFinish(activityResult: Int, intent: Intent) {
-    setResult(activityResult, intent)
-    finish()
 }

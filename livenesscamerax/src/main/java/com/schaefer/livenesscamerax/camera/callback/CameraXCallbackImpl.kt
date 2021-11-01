@@ -1,18 +1,18 @@
 package com.schaefer.livenesscamerax.camera.callback
 
-import com.schaefer.livenesscamerax.camera.provider.image.ImageHandler
 import com.schaefer.livenesscamerax.core.extensions.encoderFilePath
+import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCase
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 
 internal class CameraXCallbackImpl(
-    val onImageSavedAction: (PhotoResult, Boolean) -> Unit,
-    val onErrorAction: (Exception) -> Unit,
-    private val imageHandler: ImageHandler
+    private val onImageSavedAction: (PhotoResult, Boolean) -> Unit,
+    private val onErrorAction: (Exception) -> Unit,
+    private val editPhotoUseCase: EditPhotoUseCase
 ) : CameraXCallback {
 
     override fun onSuccess(photoFile: File, takenByUser: Boolean) {
-        imageHandler.editPhotoFile(photoFile)
+        editPhotoUseCase.editPhotoFile(photoFile)
 
         onImageSavedAction(
             PhotoResult(
