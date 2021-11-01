@@ -2,7 +2,6 @@ package com.schaefer.livenesscamerax.domain.repository.file
 
 import android.content.Context
 import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.domain.repository.file.FileRepository
 import com.schaefer.livenesscamerax.domain.model.StorageType
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -17,6 +16,10 @@ internal class CameraFileRepository(
     private val storageType: StorageType,
     private val context: Context
 ) : FileRepository {
+
+    init {
+        deleteStorageFiles()
+    }
 
     override fun getPhotoFile() = File(
         provideOutputDirectory(),

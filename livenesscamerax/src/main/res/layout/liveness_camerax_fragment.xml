@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/clRoot">
@@ -21,6 +22,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/liveness_camerax_step_card_view_background"
             android:minHeight="@dimen/liveness_camerax_card_message_min_height">
 
             <TextView
@@ -34,6 +36,7 @@
                 android:layout_marginBottom="8dp"
                 android:textAlignment="center"
                 android:visibility="gone"
+                android:textColor="@color/liveness_camerax_step_card_view_text"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -48,12 +51,15 @@
         android:layout_width="@dimen/liveness_camerax_button_take_picture_width"
         android:layout_height="@dimen/liveness_camerax_button_take_picture_height"
         android:layout_marginBottom="@dimen/liveness_camerax_button_take_picture_margin"
+        android:background="@drawable/liveness_camerax_rounded_button"
         android:scaleType="fitCenter"
         android:text="@string/liveness_camerax_take_photo"
+        android:textColor="@color/liveness_camerax_button_take_picture_text"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        tools:visibility="visible" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="liveness_camerax_purple_200">#FFBB86FC</color>
+    <color name="liveness_camerax_purple_500">#FF6200EE</color>
+    <color name="liveness_camerax_purple_700">#FF3700B3</color>
+    <color name="liveness_camerax_teal_200">#FF03DAC5</color>
+    <color name="liveness_camerax_teal_700">#FF018786</color>
+    <color name="liveness_camerax_black">#FF000000</color>
+    <color name="liveness_camerax_white">#FFFFFFFF</color>
+
     <color name="liveness_camerax_overlay_background">#000000</color>
     <color name="liveness_camerax_overlay_border">#000000</color>
+    <color name="liveness_camerax_step_card_view_text">#000000</color>
+    <color name="liveness_camerax_step_card_view_background" >#FFFFFF</color>
+    <color name="liveness_camerax_button_take_picture_text">#000000</color>
+    <color name="liveness_camerax_button_take_picture_background">#FFFFFF</color>
 </resources>
