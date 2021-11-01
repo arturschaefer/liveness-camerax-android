@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Liveness CameraX Colors -->
+    <color name="liveness_camerax_overlay_background">#000000</color>
+    <color name="liveness_camerax_overlay_border">#000000</color>
+    <color name="liveness_camerax_step_card_view_text">#000000</color>
+    <color name="liveness_camerax_step_card_view_background" >#FFFFFF</color>
+    <color name="liveness_camerax_button_take_picture_text">#000000</color>
+    <color name="liveness_camerax_button_take_picture_background">#FFFFFF</color>
 </resources>

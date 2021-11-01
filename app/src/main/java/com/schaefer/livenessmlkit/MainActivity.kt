@@ -8,12 +8,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
-import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.domain.model.StorageType
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
+import com.schaefer.livenessmlkit.adapter.ImageListAdapter
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -21,11 +21,13 @@ class MainActivity : AppCompatActivity() {
 
     private val livenessEntryPoint = LivenessEntryPoint
     private val mutableStepList = arrayListOf<StepLiveness>()
+    private val imageListAdapter = ImageListAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        binding.rvImageList.adapter = imageListAdapter
         setContentView(binding.root)
 
         launchLivenessActivity()
@@ -43,19 +45,24 @@ class MainActivity : AppCompatActivity() {
                             storageType = StorageType.INTERNAL
                         ),
                         context = this,
-                    ) {
-                        if (it.error == null) {
-                            val imageDecoded =
-                                Base64.decode(it.createdByUser?.fileBase64, Base64.NO_WRAP)
-                            Glide
-                                .with(this)
-                                .load(imageDecoded)
-                                .centerCrop()
-                                .into(binding.ivResult)
+                    ) { livenessCameraXResult ->
+                        if (livenessCameraXResult.error == null) {
+                            val listOfImages = arrayListOf<ByteArray>().apply {
+                                livenessCameraXResult.createdBySteps?.let { photoResultList ->
+                                    this.addAll(
+                                        photoResultList.map {
+                                            Base64.decode(it.fileBase64, Base64.NO_WRAP)
+                                        }
+                                    )
+                                }
+                            }
 
-                            binding.ivResult.isVisible = true
+                            imageListAdapter.imageList = listOfImages
+                            binding.tvListResult.text =
+                                getString(R.string.result_list, listOfImages.size.toString())
+                            binding.groupResultList.isVisible = true
                         } else {
-                            it.error?.let {
+                            livenessCameraXResult.error?.let {
                                 Log.e(
                                     this.localClassName,
                                     it.toString()

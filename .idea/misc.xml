@@ -4,8 +4,13 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.24461538461538462" />
+        <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/drawable/liveness_camerax_rounded_button.xml" value="0.20555555555555555" />
         <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/layout/image_item.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/layout/item_image.xml" value="0.1793478260869565" />
+        <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/layout/layout_item_image.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1296875" />
+        <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/livenesscamerax/src/main/res/drawable/liveness_camerax_rounded_button.xml" value="0.20555555555555555" />
         <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/livenesscamerax/src/main/res/layout/activity_livenesscamera.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/livenesscamerax/src/main/res/layout/fragment_camerax.xml" value="0.1793478260869565" />
         <entry key="..\:/Users/Artur Schaefer/AndroidStudioProjects/Liveness-Android-ML-Kit/livenesscamerax/src/main/res/layout/liveness_camerax_fragment.xml" value="0.23229166666666667" />
