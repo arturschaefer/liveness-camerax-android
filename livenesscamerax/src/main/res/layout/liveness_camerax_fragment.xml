@@ -60,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.schaefer.livenesscamerax.presentation.widgets.OverlayView
+    <com.schaefer.livenesscamerax.core.widgets.OverlayView
         android:id="@+id/overlayView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

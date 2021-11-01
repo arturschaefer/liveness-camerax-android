@@ -33,7 +33,7 @@ internal class VisionFaceDetector : FrameFaceDetector {
     }
 
     @SuppressLint("UnsafeOptInUsageError")
-    override fun detect(imageProxy: ImageProxy, proccessImage: (List<Face>) -> Unit) {
+    override fun detect(imageProxy: ImageProxy, processImage: (List<Face>) -> Unit) {
         val image: InputImage = InputImage.fromMediaImage(
             imageProxy.image,
             imageProxy.imageInfo.rotationDegrees
@@ -41,7 +41,7 @@ internal class VisionFaceDetector : FrameFaceDetector {
 
         processImage(
             image, {
-                proccessImage.invoke(it)
+                processImage.invoke(it)
             }
         ) {
             imageProxy.close()
