@@ -1,21 +1,15 @@
 package com.schaefer.livenesscamerax.presentation
 
-import android.content.Context
 import android.os.Bundle
-import androidx.activity.result.ActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxActivityBinding
 import com.schaefer.livenesscamerax.di.LibraryModule
-import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import com.schaefer.livenesscamerax.presentation.navigation.LivenessCameraX
-import com.schaefer.livenesscamerax.presentation.navigation.LivenessCameraXImpl
-
-private val livenessCameraX: LivenessCameraX by lazy {
-    LivenessCameraXImpl()
-}
+import com.schaefer.livenesscamerax.di.LibraryModule.container
+import com.schaefer.livenesscamerax.domain.model.exceptions.LivenessCameraXException
 
 class LivenessCameraXActivity : AppCompatActivity() {
 
+    private val resultHandler by lazy { container.provideResultLivenessRepository() }
     private lateinit var binding: LivenessCameraxActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +21,8 @@ class LivenessCameraXActivity : AppCompatActivity() {
         LibraryModule.initializeDI(application)
     }
 
-    companion object {
-        fun getLivenessIntent(
-            cameraSettings: CameraSettings = CameraSettings(),
-            context: Context
-        ) = livenessCameraX.getIntent(cameraSettings, context)
-
-        fun getLivenessDataResult(result: ActivityResult) =
-            livenessCameraX.getDataResult(result)
+    override fun onBackPressed() {
+        super.onBackPressed()
+        resultHandler.error(LivenessCameraXException.UserCanceledException())
     }
 }

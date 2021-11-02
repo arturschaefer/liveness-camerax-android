@@ -11,24 +11,22 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.camera.CameraX
-import com.schaefer.livenesscamerax.camera.CameraXImpl
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
-import com.schaefer.livenesscamerax.camera.provider.file.FileHandler
-import com.schaefer.livenesscamerax.camera.provider.image.ImageHandler
-import com.schaefer.livenesscamerax.core.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.core.extensions.observeOnce
 import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
 import com.schaefer.livenesscamerax.core.extensions.snack
+import com.schaefer.livenesscamerax.core.resourceprovider.ResourcesProvider
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.livenesscamerax.domain.checker.LivenessChecker
+import com.schaefer.livenesscamerax.domain.model.exceptions.LivenessCameraXException
+import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepository
+import com.schaefer.livenesscamerax.domain.repository.resultliveness.ResultLivenessRepository
+import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCase
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
-import com.schaefer.livenesscamerax.presentation.provider.resource.ResourcesProvider
-import com.schaefer.livenesscamerax.presentation.provider.result.ResultHandler
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,31 +47,28 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             EXTRAS_LIVENESS_CAMERA_SETTINGS
         ) ?: CameraSettings()
     }
-    private val resourceProvider: ResourcesProvider by lazy { container.resourceProvider }
-    private val livenessChecker: LivenessChecker by lazy { container.provideLivenessChecker }
-    private val resultHandler: ResultHandler by lazy { container.provideResultHandler }
-    private val imageHandler: ImageHandler by lazy { container.provideImageHandler }
-    private val fileHandler: FileHandler by lazy {
-        container.provideFileHandler(cameraSettings.storageType)
+    private val resourceProvider: ResourcesProvider by lazy { container.provideResourceProvider() }
+    private val checkLivenessRepository: CheckLivenessRepository by lazy {
+        container.provideCheckLivenessRepository()
     }
+    private val resultLivenessRepository: ResultLivenessRepository by lazy {
+        container.provideResultLivenessRepository()
+    }
+    private val editPhotoUseCase: EditPhotoUseCase by lazy { container.provideEditPhotoUseCase() }
     private val livenessViewModel: LivenessViewModel by viewModels {
-        LivenessViewModelFactory(resourceProvider, livenessChecker)
+        LivenessViewModelFactory(resourceProvider, checkLivenessRepository)
     }
 
     private val cameraXCallback: CameraXCallback by lazy {
         CameraXCallbackImpl(
             ::handlePictureSuccess,
-            resultHandler::error,
-            imageHandler,
+            resultLivenessRepository::error,
+            editPhotoUseCase,
         )
     }
+
     private val cameraX: CameraX by lazy {
-        CameraXImpl(
-            settings = cameraSettings,
-            cameraXCallback = cameraXCallback,
-            lifecycleOwner = this,
-            fileHandler = fileHandler
-        )
+        container.provideCameraX(cameraSettings, cameraXCallback, this)
     }
 
     private val cameraManifest = Manifest.permission.CAMERA
@@ -86,13 +81,15 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         when {
             granted -> permissionIsGranted()
             requireActivity().shouldShowRequest(cameraManifest) -> {
-                parentView.snack(
-                    requireContext().getString(R.string.liveness_camerax_message_permission_denied)
-                )
+                parentView.snack(R.string.liveness_camerax_message_permission_denied) {
+                    resultLivenessRepository.error(LivenessCameraXException.PermissionDenied())
+                    requireActivity().finish()
+                }
             }
-            else -> parentView.snack(
-                requireContext().getString(R.string.liveness_camerax_message_permission_unknown)
-            )
+            else -> parentView.snack(R.string.liveness_camerax_message_permission_unknown) {
+                resultLivenessRepository.error(LivenessCameraXException.PermissionUnknown())
+                requireActivity().finish()
+            }
         }
     }
 
@@ -114,7 +111,11 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
 
     override fun onStop() {
         super.onStop()
-        resultHandler.error(LivenessCameraXException.ContextSwitchException())
+
+        if (!requireActivity().isFinishing) {
+            resultLivenessRepository.error(LivenessCameraXException.ContextSwitchException())
+            requireActivity().finish()
+        }
     }
 
     private fun permissionIsGranted() {
@@ -165,7 +166,8 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private fun handlePictureSuccess(photoResult: PhotoResult, takenByUser: Boolean) {
         if (takenByUser) {
             val filesPath = cameraX.getAllPictures()
-            resultHandler.success(photoResult, filesPath)
+            resultLivenessRepository.success(photoResult, filesPath)
+            requireActivity().finish()
         } else {
             Timber.d(photoResult.toString())
         }

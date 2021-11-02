@@ -15,9 +15,10 @@ private const val WHITE = 0xFF
 @ExperimentalCoroutinesApi
 internal class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
 
-    private val publishSubject = BroadcastChannel<Double>(Channel.BUFFERED)
+    private val luminosityBroadcastChannel = BroadcastChannel<Double>(Channel.BUFFERED)
 
-    override fun getLuminosity(): Flow<Double> = publishSubject.openSubscription().consumeAsFlow()
+    override fun getLuminosity(): Flow<Double> =
+        luminosityBroadcastChannel.openSubscription().consumeAsFlow()
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
     override suspend fun onFrameCaptured(imageProxy: ImageProxy) {
@@ -26,7 +27,7 @@ internal class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
             val data = buffer.toByteArray()
             val pixels = data.map { it.toInt() and WHITE }
 
-            publishSubject.send(pixels.average())
+            luminosityBroadcastChannel.send(pixels.average())
 
             imageProxy.close()
         }
