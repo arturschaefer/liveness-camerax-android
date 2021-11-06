@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 internal class LivenessCameraXContainer(private val application: Application) {
+    val provideLivenessEntryPoint = LivenessEntryPoint
 
     fun provideContext(): Context {
         return application.applicationContext
@@ -93,6 +94,4 @@ internal class LivenessCameraXContainer(private val application: Application) {
             fileRepository = provideFileRepository(cameraSettings.storageType)
         )
     }
-
-    val provideLivenessEntryPoint = LivenessEntryPoint
 }
