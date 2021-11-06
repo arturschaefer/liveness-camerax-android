@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-parcelize'
+    id 'maven-publish'
 }
 
 apply from: "$rootDir/dependencies.gradle"
@@ -78,4 +79,17 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"
     androidTestImplementation "androidx.test.espresso:espresso-core:$versions.espresso"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$versions.mockito_kotlin"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = "com.schaefer.livenesscamerax"
+                artifactId = "livenesscamerax"
+                version = '0.0.1'
+            }
+        }
+    }
 }
