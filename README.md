@@ -1,15 +1,71 @@
 # Liveness CameraX
 
-This project intends to provide an easy way to get proof of life before getting pictures
-with [CameraX](https://developer.android.com/training/camerax)
-and [Firebase Face Detection](https://developers.google.com/ml-kit/vision/face-detection).
+An easy way to consume results from [CameraX](https://developer.android.com/training/camerax)
+and [Firebase Face Detection](https://developers.google.com/ml-kit/vision/face-detection) as an API. With simple steps, you can challenge your user before sinding pictures to your services.
 
-## Common usages
+## Installation
 
-In scenarios when a selfie is required, we can use this library to check the user's liveness before
-taking the picture. It's a way to avoid several frauds and check pictures' integrity before being
-validated on the server side, reducing costs and saving our time. The bests examples to try this
-library are SignUp, device authorization, or even password reset.
+### Configure root build.gradle (jitpack.io):
+
+```
+allprojects {  
+    repositories {  
+        ...  
+        maven { url 'https://jitpack.io' }  
+    }  
+}  
+```
+
+### Add dependencie to your project build.gradle:
+
+```
+dependencies {
+  implementation 'implementation 'com.github.arturschaefer:liveness-camerax-android:TAG'
+}
+```
+
+## Start to use
+
+You can start and listen the result passing its `Context` and a callback listener.
+
+```
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        ...
+        binding.btnLiveness.setOnClickListener {
+            LivenessEntryPoint.startLiveness(context = this) { result ->
+                result.createdByUser?.let { photoResult ->
+                    // Photo taken by the user
+                }
+                result.createdBySteps?.let { listOfPhotos ->
+                    // List of photos taken by the user
+                }
+                result.error?.let { error ->
+                    // Handle errors
+                }
+            }
+        }
+    }
+}
+```
+## Customization
+
+You can customize all the assets and dimensions. It's only required to create the resources with the same keys in your project.
+
+## Challenges to request
+
+There are several steps to challenge the user, and you can check it inside [StepLiveness](https://github.dev/arturschaefer/liveness-camerax-android/blob/50f0023f3b247cdd6146f489db21d7e7008d7201/livenesscamerax/src/main/java/com/schaefer/livenesscamerax/domain/model/StepLiveness.kt#L1). They are:
+
+* STEP_LUMINOSITY: Luminosity captured in real-time. We get the number of white pixels in every
+  frame captured to define the luminosity.
+* STEP_SMILE: We consider a smiling probability to pass it. Some libraries called it happiness
+  probability too.ç
+* STEP_BLINK: After both eyes opened, we checked if they blinked. Use it carefully, because you need
+  to think about accessibility.
+* STEP_HEAD_FRONTAL, STEP_HEAD_LEFT, STEP_HEAD_RIGHT: Each step references the head's position
+  inside an Euler's graphic. These heads steps could be confunsing to the user.
 
 ## How does its work
 
@@ -19,25 +75,21 @@ show a button on the UI. It will allow him to take a picture and finalize the pr
 user finalizes the process you'll receive as a result the picture taken by the user and a list of
 files automatically created.
 
-### Why it is built like that
+## Common examples
 
-With this kind of result you can choose what picture shows to the user on UI as a result, we
+In scenarios when a selfie is required to improve security, we can use this library to check the user's liveness before
+taking the picture. It's a way to avoid several frauds and check pictures integrity before being
+validated on the server side, reducing costs and saving our time. The bests examples to try this
+library are SignUp, device authorization, or even password reset.
+
+
+## Why it is built like that
+
+With this kind of result, which is a list of photos in Base, you can choose what picture show to the user on UI as a result. I
 recommend that he takes for this. The most common reason to do this is to require confirmation
 before send to your backend. With the list of files automatically taken you can compare all photos
-and validate if he is the same picture in all of those.
+and validate if he is the same picture in all of those photos.
 
-### Possible steps
-
-There are several steps to challenge the user. They are:
-
-* STEP_LUMINOSITY: Luminosity captured in real-time. We get the number of white pixels in every
-  frame captured to define the luminosity.
-* STEP_HEAD_FRONTAL, STEP_HEAD_LEFT, STEP_HEAD_RIGHT: Each step references the head's position
-  inside an Euler's graphic.
-* STEP_SMILE: We consider a smiling probability to pass it. Some libraries called it happiness
-  probability too.
-* STEP_BLINK: After both eyes opened, we checked if they blinked. Use it carefully, because you need
-  to think about accessibility.
 
 ### Constraints
 
@@ -47,56 +99,8 @@ problem. It is important to know about the worst-case scenario. When a second fa
 delete all the completed steps and start over. It means the completed steps and taken pictures will
 be canceled/removed, and your user needs to pass through the challenges again.
 
-## Dependencies
+### Libary tech stuff
 
-You can check all
-the [dependencies versions](https://github.com/arturschaefer/Liveness-Android-ML-Kit/blob/main/dependencies.gradle)
-, and
-the [libraries](https://github.com/arturschaefer/Liveness-Android-ML-Kit/blob/main/livenesscamerax/build.gradle)
-used inside the project, but keep in mind:
-
-* minSDK 19 it's the minimal version required to use Firebase ML Kit.
-* targetSDKVersion and compileSDKVersion are set to 31 already
-* [Fragment 1.3.6](https://developer.android.com/jetpack/androidx/releases/fragment#1.3.6)
-  and [Activity 1.3.1](https://developer.android.com/jetpack/androidx/releases/activity#1.3.1) are
-  used. Keep it in mind if you are using old versions of this in your code.
-
-### How to use it
-
-Use this library is very simple. You need to call our activity passing the steps and wait for the
-result. In our [sample's activity]() is possible to see the full usage or you can do as showed
-bellow.
-
-* Create a list of `StepLiveness`
-  ```
-  private val livenessStepList = arrayListOf(
-      StepLiveness.STEP_HEAD_LEFT,
-      StepLiveness.STEP_HEAD_RIGHT,
-      StepLiveness.STEP_BLINK,
-      StepLiveness.STEP_SMILE
-  )
-  ```
-
-* Start
-  the [LivenessCameraXActivity]()
-  waiting for result. You can do this using `startActivityForResult`, but is highly recommend to use
-  the new `registerForActivityResult`.
-  ```
-  private val startLiveness = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-  ) { result: ActivityResult ->
-    // Handle result
-  }
-  
-  private fun launchLiveness(){
-    startLiveness.launch(
-      LivenessCameraXActivity.getLivenessIntent(
-        livenessStepList = livenessStepList,
-        context = this
-      )
-    )
-  }
-  ```
 It's simple like that to use.
 For more technical information you can check the [README.md]() inside the library.
 
