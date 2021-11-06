@@ -86,7 +86,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = "com.schaefer.livenesscamerax"
+                groupId = "com.schaefer"
                 artifactId = "livenesscamerax"
                 version = '0.0.1'
             }
