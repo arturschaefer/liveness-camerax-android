@@ -22,7 +22,7 @@ allprojects {
 
 ```
 dependencies {
-  implementation 'implementation 'com.github.aschaefer:liveness-camerax-android:TAG'
+	implementation 'com.github.arturschaefer:liveness-camerax-android:TAG'
 }
 ```
 
