@@ -34,3 +34,9 @@ allprojects{
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+def scriptsDirectory(scripts) {
+    def directory = file('scripts')
+    return new File(directory, scripts)
+}
+apply from: scriptsDirectory('git-hook.gradle')
