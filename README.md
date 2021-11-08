@@ -1,4 +1,4 @@
-# Liveness CameraX
+# Liveness CameraX [![](https://jitpack.io/v/arturschaefer/liveness-camerax-android.svg)](https://jitpack.io/#arturschaefer/liveness-camerax-android)
 
 An easy way to consume results from [CameraX](https://developer.android.com/training/camerax)
 and [Firebase Face Detection](https://developers.google.com/ml-kit/vision/face-detection) as an API. With simple steps, you can challenge your user before sinding pictures to your services.

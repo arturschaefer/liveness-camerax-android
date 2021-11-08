@@ -13,8 +13,8 @@ object LivenessEntryPoint {
     private var callbackResult: ((LivenessCameraXResult) -> Unit)? = null
 
     fun startLiveness(
-        cameraSettings: CameraSettings,
         context: Context,
+        cameraSettings: CameraSettings = CameraSettings(),
         callback: (LivenessCameraXResult) -> Unit
     ) {
         context.startActivity(
