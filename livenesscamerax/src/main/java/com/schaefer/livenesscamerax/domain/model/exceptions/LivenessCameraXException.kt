@@ -19,7 +19,7 @@ internal sealed class LivenessCameraXException : Exception() {
         override val message: String? = ErrorsTypes.PERMISSION_DENIED.name
     ) : LivenessCameraXException()
 
-    data class PermissionUnknown (
+    data class PermissionUnknown(
         override val message: String? = ErrorsTypes.PERMISSION_UNKNOWN.name
     ) : LivenessCameraXException()
 }
