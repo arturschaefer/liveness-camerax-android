@@ -20,6 +20,7 @@ data class CameraSettings(
     val analyzeType: AnalyzeType = AnalyzeType.FACE_PROCESSOR,
     val livenessStepList: ArrayList<StepLiveness> = arrayListOf(
         StepLiveness.STEP_LUMINOSITY,
-        StepLiveness.STEP_SMILE
+        StepLiveness.STEP_SMILE,
+        StepLiveness.STEP_BLINK,
     )
 ) : Parcelable
