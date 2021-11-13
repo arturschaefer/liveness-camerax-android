@@ -9,4 +9,7 @@ dependencyResolutionManagement {
 rootProject.name = "Liveness ML Kit"
 
 include ':app'
+
 include ':livenesscamerax'
+include ':livenesscamerax:core'
+include ':livenesscamerax:domain'

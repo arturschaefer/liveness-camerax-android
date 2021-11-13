@@ -1,10 +1,10 @@
 package com.schaefer.livenesscamerax.domain.mapper
 
 import com.google.mlkit.vision.face.Face
-import com.schaefer.livenesscamerax.core.mapper.Mapper
+import com.schaefer.core.mapper.Mapper
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 
-internal class FaceToFaceResultMapper : Mapper<Face, FaceResult> {
+internal class FaceToFaceResultMapper : com.schaefer.core.mapper.Mapper<Face, FaceResult> {
 
     override fun map(item: Face): FaceResult {
         return FaceResult(

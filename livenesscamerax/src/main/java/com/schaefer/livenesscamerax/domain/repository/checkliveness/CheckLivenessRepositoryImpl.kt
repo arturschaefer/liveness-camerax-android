@@ -1,15 +1,16 @@
 package com.schaefer.livenesscamerax.domain.repository.checkliveness
 
-import com.schaefer.livenesscamerax.core.extensions.orFalse
+import com.schaefer.core.extensions.orFalse
+import com.schaefer.domain.model.HeadMovement
+import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.livenesscamerax.domain.model.FaceResult
-import com.schaefer.livenesscamerax.domain.model.HeadMovement
 
 private const val EYE_OPENED_PROBABILITY = 0.4F
 private const val IS_SMILING_PROBABILITY = 0.3F
 private const val EULER_Y_RIGHT_MOVEMENT = 35
 private const val EULER_Y_LEFT_MOVEMENT = -35
 
-internal class CheckLivenessRepositoryImpl : CheckLivenessRepository {
+internal class CheckLivenessRepositoryImpl : CheckLivenessRepository<FaceResult> {
 
     override fun isEyeOpened(eyeOpenedProbabilityValue: Float?): Boolean {
         return eyeOpenedProbabilityValue?.let { (it > EYE_OPENED_PROBABILITY) }.orFalse()

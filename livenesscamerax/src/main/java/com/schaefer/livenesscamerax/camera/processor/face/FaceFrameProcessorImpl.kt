@@ -6,8 +6,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.face.Face
+import com.schaefer.core.extensions.getLuminosity
 import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
-import com.schaefer.livenesscamerax.core.extensions.getLuminosity
 import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +27,7 @@ internal class FaceFrameProcessorImpl(
 
     private val facesBroadcastChannel = BroadcastChannel<List<FaceResult>>(Channel.BUFFERED)
 
-    override fun getData(): Flow<List<FaceResult>> =
+    override fun observeFaceList(): Flow<List<FaceResult>> =
         facesBroadcastChannel.openSubscription().consumeAsFlow()
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)

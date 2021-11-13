@@ -9,21 +9,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.schaefer.core.extensions.observeOnce
+import com.schaefer.core.extensions.orFalse
+import com.schaefer.core.extensions.shouldShowRequest
+import com.schaefer.core.extensions.snack
+import com.schaefer.core.resourceprovider.ResourcesProvider
+import com.schaefer.domain.EditPhotoUseCase
+import com.schaefer.domain.model.exceptions.LivenessCameraXException
+import com.schaefer.domain.repository.CheckLivenessRepository
+import com.schaefer.domain.repository.ResultLivenessRepository
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
-import com.schaefer.livenesscamerax.core.extensions.observeOnce
-import com.schaefer.livenesscamerax.core.extensions.orFalse
-import com.schaefer.livenesscamerax.core.extensions.shouldShowRequest
-import com.schaefer.livenesscamerax.core.extensions.snack
-import com.schaefer.livenesscamerax.core.resourceprovider.ResourcesProvider
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.livenesscamerax.domain.model.exceptions.LivenessCameraXException
-import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepository
-import com.schaefer.livenesscamerax.domain.repository.resultliveness.ResultLivenessRepository
-import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCase
+import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
@@ -48,10 +49,10 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         ) ?: CameraSettings()
     }
     private val resourceProvider: ResourcesProvider by lazy { container.provideResourceProvider() }
-    private val checkLivenessRepository: CheckLivenessRepository by lazy {
+    private val checkLivenessRepository: CheckLivenessRepository<FaceResult> by lazy {
         container.provideCheckLivenessRepository()
     }
-    private val resultLivenessRepository: ResultLivenessRepository by lazy {
+    private val resultLivenessRepository: ResultLivenessRepository<PhotoResult> by lazy {
         container.provideResultLivenessRepository()
     }
     private val editPhotoUseCase: EditPhotoUseCase by lazy { container.provideEditPhotoUseCase() }
@@ -132,8 +133,8 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         }
 
         livenessViewModel.apply {
-            observeFacesDetection(cameraX.getFacesFlowable())
-            observeLuminosity(cameraX.getLuminosity())
+            observeFacesDetection(cameraX.observeFaceList())
+            observeLuminosity(cameraX.observeLuminosity())
             hasBlinked.observeOnce(viewLifecycleOwner) { takePicture(it) }
             hasSmiled.observeOnce(viewLifecycleOwner) { takePicture(it) }
             hasGoodLuminosity.observeOnce(viewLifecycleOwner) { takePicture(it) }

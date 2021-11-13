@@ -4,6 +4,12 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.schaefer.core.resourceprovider.ResourcesProvider
+import com.schaefer.core.resourceprovider.ResourcesProviderFactory
+import com.schaefer.domain.EditPhotoUseCase
+import com.schaefer.domain.repository.CheckLivenessRepository
+import com.schaefer.domain.repository.FileRepository
+import com.schaefer.domain.repository.ResultLivenessRepository
 import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
@@ -12,20 +18,16 @@ import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
-import com.schaefer.livenesscamerax.core.resourceprovider.ResourcesProvider
-import com.schaefer.livenesscamerax.core.resourceprovider.ResourcesProviderFactory
 import com.schaefer.livenesscamerax.domain.mapper.CameraLensToCameraSelectorMapper
 import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
+import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.StorageType
-import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepository
 import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepositoryFactory
-import com.schaefer.livenesscamerax.domain.repository.file.FileRepository
 import com.schaefer.livenesscamerax.domain.repository.file.FileRepositoryFactory
-import com.schaefer.livenesscamerax.domain.repository.resultliveness.ResultLivenessRepository
 import com.schaefer.livenesscamerax.domain.repository.resultliveness.ResultLivenessRepositoryFactory
-import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCase
 import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCaseFactory
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
+import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -40,14 +42,14 @@ internal class LivenessCameraXContainer(private val application: Application) {
     }
 
     fun provideResourceProvider(): ResourcesProvider {
-        return ResourcesProviderFactory.create()
+        return ResourcesProviderFactory(provideContext()).create()
     }
 
-    fun provideResultLivenessRepository(): ResultLivenessRepository {
+    fun provideResultLivenessRepository(): ResultLivenessRepository<PhotoResult> {
         return ResultLivenessRepositoryFactory.create()
     }
 
-    fun provideCheckLivenessRepository(): CheckLivenessRepository {
+    fun provideCheckLivenessRepository(): CheckLivenessRepository<FaceResult> {
         return CheckLivenessRepositoryFactory.create()
     }
 
@@ -71,7 +73,9 @@ internal class LivenessCameraXContainer(private val application: Application) {
     }
 
     @ExperimentalCoroutinesApi
-    fun provideFaceFrameProcessor(lifecycleOwner: LifecycleOwner): FaceFrameProcessor {
+    fun provideFaceFrameProcessor(
+        lifecycleOwner: LifecycleOwner
+    ): FaceFrameProcessor {
         return FaceFrameProcessorImpl(
             lifecycleOwner.lifecycleScope,
             FaceToFaceResultMapper(),

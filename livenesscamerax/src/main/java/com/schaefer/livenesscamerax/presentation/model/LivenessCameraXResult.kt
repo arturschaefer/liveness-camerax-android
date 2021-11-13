@@ -1,8 +1,8 @@
 package com.schaefer.livenesscamerax.presentation.model
 
 import android.os.Parcelable
-import com.schaefer.livenesscamerax.core.extensions.encoderFilePath
-import com.schaefer.livenesscamerax.core.extensions.getFileNameWithoutExtension
+import com.schaefer.core.extensions.encoderFilePath
+import com.schaefer.core.extensions.getFileNameWithoutExtension
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

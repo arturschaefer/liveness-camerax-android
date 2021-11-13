@@ -9,8 +9,8 @@ internal interface CameraX {
     fun startCamera(cameraPreviewView: PreviewView)
     fun enableFlash(enabled: Boolean)
     fun takePicture(takenByUser: Boolean)
-    fun getFacesFlowable(): Flow<List<FaceResult>>
-    fun getLuminosity(): Flow<Double>
+    fun observeFaceList(): Flow<List<FaceResult>>
+    fun observeLuminosity(): Flow<Double>
     fun getLifecycleObserver(): LifecycleObserver
     fun deleteAllPictures(): Boolean
     fun getAllPictures(): List<String>
