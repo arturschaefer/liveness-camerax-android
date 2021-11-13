@@ -1,6 +1,7 @@
 package com.schaefer.livenesscamerax.domain.repository.file
 
 import android.content.Context
+import com.schaefer.domain.repository.FileRepository
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.domain.model.StorageType
 import org.apache.commons.io.FileUtils
@@ -12,7 +13,7 @@ private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 private const val SUFFIX_PHOTO_FILE = ".jpg"
 private const val DIR_NAME = "photos_liveness"
 
-internal class CameraFileRepository(
+internal class FileRepositoryImpl(
     private val storageType: StorageType,
     private val context: Context
 ) : FileRepository {

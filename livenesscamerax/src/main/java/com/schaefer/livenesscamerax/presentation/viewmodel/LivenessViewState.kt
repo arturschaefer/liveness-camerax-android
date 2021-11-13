@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.presentation.viewmodel
 
-import com.schaefer.livenesscamerax.core.viewmodel.UIState
+import com.schaefer.core.viewmodel.UIState
 
 internal data class LivenessViewState(
     val messageLiveness: String = "",

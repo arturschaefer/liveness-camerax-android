@@ -10,14 +10,14 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.schaefer.core.extensions.orFalse
 import com.schaefer.livenesscamerax.BuildConfig
 import com.schaefer.livenesscamerax.camera.analyzer.AnalyzeProvider
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.di.LibraryModule.application
 import com.schaefer.livenesscamerax.domain.mapper.CameraLensToCameraSelectorMapper
-import com.schaefer.livenesscamerax.domain.model.exceptions.LivenessCameraXException
-import com.schaefer.livenesscamerax.domain.repository.file.FileRepository
+import com.schaefer.domain.model.exceptions.LivenessCameraXException
+import com.schaefer.domain.repository.FileRepository
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -48,9 +48,9 @@ internal class CameraXImpl(
     private var camera: Camera? = null
 
     //region - Camera settings and creators
-    override fun getFacesFlowable() = analyzerProvider.faceFrameProcessor.getData()
+    override fun observeFaceList() = analyzerProvider.faceFrameProcessor.observeFaceList()
 
-    override fun getLuminosity() = analyzerProvider.luminosityFrameProcessor.getLuminosity()
+    override fun observeLuminosity() = analyzerProvider.luminosityFrameProcessor.observeLuminosity()
 
     override fun getLifecycleObserver() = this
 

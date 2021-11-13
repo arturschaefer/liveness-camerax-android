@@ -2,7 +2,7 @@ package com.schaefer.livenesscamerax.camera.processor.luminosity
 
 import android.annotation.SuppressLint
 import androidx.camera.core.ImageProxy
-import com.schaefer.livenesscamerax.core.extensions.toByteArray
+import com.schaefer.core.extensions.toByteArray
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -17,7 +17,7 @@ internal class LuminosityFrameProcessorImpl : LuminosityFrameProcessor {
 
     private val luminosityBroadcastChannel = BroadcastChannel<Double>(Channel.BUFFERED)
 
-    override fun getLuminosity(): Flow<Double> =
+    override fun observeLuminosity(): Flow<Double> =
         luminosityBroadcastChannel.openSubscription().consumeAsFlow()
 
     @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")

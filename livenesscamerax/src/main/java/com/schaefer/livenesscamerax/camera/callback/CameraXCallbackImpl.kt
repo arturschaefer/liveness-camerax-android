@@ -1,7 +1,7 @@
 package com.schaefer.livenesscamerax.camera.callback
 
-import com.schaefer.livenesscamerax.core.extensions.encoderFilePath
-import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCase
+import com.schaefer.core.extensions.encoderFilePath
+import com.schaefer.domain.EditPhotoUseCase
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import java.io.File
 
