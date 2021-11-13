@@ -2,10 +2,10 @@ package com.schaefer.livenesscamerax.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxActivityBinding
 import com.schaefer.livenesscamerax.di.LibraryModule
 import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.domain.model.exceptions.LivenessCameraXException
 
 class LivenessCameraXActivity : AppCompatActivity() {
 
