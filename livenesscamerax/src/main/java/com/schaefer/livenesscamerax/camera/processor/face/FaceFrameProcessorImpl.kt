@@ -11,37 +11,33 @@ import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
 import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
 import com.schaefer.livenesscamerax.domain.model.FaceResult
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-@ExperimentalCoroutinesApi
 internal class FaceFrameProcessorImpl(
     private val coroutineScope: CoroutineScope,
     private val mapper: FaceToFaceResultMapper,
     private val detector: VisionFaceDetector,
 ) : FaceFrameProcessor {
 
-    private val facesBroadcastChannel = BroadcastChannel<List<FaceResult>>(Channel.BUFFERED)
+    private val facesBroadcastChannel = MutableSharedFlow<List<FaceResult>>()
 
-    override fun observeFaceList(): Flow<List<FaceResult>> =
-        facesBroadcastChannel.openSubscription().consumeAsFlow()
+    override fun observeFaceList(): Flow<List<FaceResult>> = facesBroadcastChannel.asSharedFlow()
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     override suspend fun onFrameCaptured(imageProxy: ImageProxy) {
         detector.detect(imageProxy) {
             coroutineScope.launch {
-                facesBroadcastChannel.send(
+                facesBroadcastChannel.emit(
                     prepareResultWithLuminosity(it, imageProxy)
                 )
             }
         }
     }
 
-    @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
+    @SuppressLint("UnsafeOptInUsageError")
     private fun prepareResultWithLuminosity(
         listFace: List<Face>,
         imageProxy: ImageProxy

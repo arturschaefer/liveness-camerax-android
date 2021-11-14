@@ -7,9 +7,7 @@ import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
 import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.domain.model.AnalyzeType
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@ExperimentalCoroutinesApi
 internal class AnalyzeProvider {
 
     class Builder(private val lifecycleOwner: LifecycleOwner) {
