@@ -15,6 +15,7 @@ internal class VisionFaceDetector : FrameFaceDetector {
         .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
         .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
         .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
         .enableTracking()
         .build()
 
@@ -39,12 +40,12 @@ internal class VisionFaceDetector : FrameFaceDetector {
             imageProxy.imageInfo.rotationDegrees
         )
 
-        processImage(
-            image, {
-                processImage.invoke(it)
-            }
-        ) {
+        processImage(image, handleSuccessImage(processImage)) {
             imageProxy.close()
         }
+    }
+
+    private fun handleSuccessImage(processImage: (List<Face>) -> Unit): (List<Face>) -> Unit = {
+        processImage.invoke(it)
     }
 }

@@ -29,8 +29,6 @@ import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCaseFac
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -67,12 +65,10 @@ internal class LivenessCameraXContainer(private val application: Application) {
         return Executors.newSingleThreadExecutor()
     }
 
-    @ExperimentalCoroutinesApi
     fun provideLuminosityFrameProcessor(): LuminosityFrameProcessor {
         return LuminosityFrameProcessorImpl()
     }
 
-    @ExperimentalCoroutinesApi
     fun provideFaceFrameProcessor(
         lifecycleOwner: LifecycleOwner
     ): FaceFrameProcessor {
@@ -83,8 +79,6 @@ internal class LivenessCameraXContainer(private val application: Application) {
         )
     }
 
-    @FlowPreview
-    @ExperimentalCoroutinesApi
     fun provideCameraX(
         cameraSettings: CameraSettings,
         cameraXCallback: CameraXCallback,

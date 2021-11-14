@@ -19,13 +19,9 @@ import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.di.LibraryModule.application
 import com.schaefer.livenesscamerax.domain.mapper.CameraLensToCameraSelectorMapper
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import java.util.concurrent.Future
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 internal class CameraXImpl(
     private val settings: CameraSettings,
     private val cameraXCallback: CameraXCallback,
