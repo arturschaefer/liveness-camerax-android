@@ -1,12 +1,12 @@
-package com.schaefer.livenesscamerax.camera.analyzer
+package com.schaefer.camera.analyzer
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.schaefer.livenesscamerax.camera.processor.FrameProcessor
+import com.schaefer.camera.processor.FrameProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-internal class CameraXAnalyzer(
+class CameraXAnalyzer(
     private val coroutineScope: CoroutineScope
 ) : ImageAnalysis.Analyzer {
 
