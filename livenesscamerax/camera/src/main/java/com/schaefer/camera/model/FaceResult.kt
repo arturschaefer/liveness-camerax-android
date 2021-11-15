@@ -1,8 +1,8 @@
-package com.schaefer.livenesscamerax.domain.model
+package com.schaefer.camera.model
 
 import android.graphics.Rect
 
-internal data class FaceResult(
+data class FaceResult(
     val trackingId: Int?,
     val bounds: Rect,
     val headEulerAngleX: Float,
