@@ -1,9 +1,9 @@
 package com.schaefer.livenesscamerax.domain.repository.checkliveness
 
+import com.schaefer.camera.model.FaceResult
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.domain.model.HeadMovement
 import com.schaefer.domain.repository.CheckLivenessRepository
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 
 private const val EYE_OPENED_PROBABILITY = 0.4F
 private const val IS_SMILING_PROBABILITY = 0.3F
