@@ -1,7 +1,7 @@
-package com.schaefer.livenesscamerax.camera.processor
+package com.schaefer.camera.processor
 
 import androidx.camera.core.ImageProxy
 
-internal interface FrameProcessor {
+interface FrameProcessor {
     suspend fun onFrameCaptured(imageProxy: ImageProxy)
 }

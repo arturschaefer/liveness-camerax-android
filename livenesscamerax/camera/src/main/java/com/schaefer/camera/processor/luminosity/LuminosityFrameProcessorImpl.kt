@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera.processor.luminosity
+package com.schaefer.camera.processor.luminosity
 
 import android.annotation.SuppressLint
 import androidx.camera.core.ImageProxy

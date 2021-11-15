@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera.processor.face
+package com.schaefer.camera.processor.face
 
 import android.annotation.SuppressLint
 import android.media.Image
@@ -6,17 +6,17 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.face.Face
+import com.schaefer.camera.detector.VisionFaceDetector
+import com.schaefer.camera.mapper.FaceToFaceResultMapper
+import com.schaefer.camera.model.FaceResult
 import com.schaefer.core.extensions.getLuminosity
-import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
-import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-internal class FaceFrameProcessorImpl(
+class FaceFrameProcessorImpl(
     private val coroutineScope: CoroutineScope,
     private val mapper: FaceToFaceResultMapper,
     private val detector: VisionFaceDetector,
