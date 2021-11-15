@@ -4,23 +4,23 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.schaefer.camera.CameraX
+import com.schaefer.camera.callback.CameraXCallback
+import com.schaefer.camera.detector.VisionFaceDetector
+import com.schaefer.camera.mapper.FaceToFaceResultMapper
+import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.processor.face.FaceFrameProcessor
+import com.schaefer.camera.processor.face.FaceFrameProcessorImpl
+import com.schaefer.camera.processor.luminosity.LuminosityFrameProcessor
+import com.schaefer.camera.processor.luminosity.LuminosityFrameProcessorFactory
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.core.resourceprovider.ResourcesProviderFactory
 import com.schaefer.domain.EditPhotoUseCase
 import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.domain.repository.FileRepository
 import com.schaefer.domain.repository.ResultLivenessRepository
-import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
-import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
 import com.schaefer.livenesscamerax.domain.mapper.CameraLensToCameraSelectorMapper
-import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.StorageType
 import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepositoryFactory
 import com.schaefer.livenesscamerax.domain.repository.file.FileRepositoryFactory
@@ -66,7 +66,7 @@ internal class LivenessCameraXContainer(private val application: Application) {
     }
 
     fun provideLuminosityFrameProcessor(): LuminosityFrameProcessor {
-        return LuminosityFrameProcessorImpl()
+        return LuminosityFrameProcessorFactory.create()
     }
 
     fun provideFaceFrameProcessor(

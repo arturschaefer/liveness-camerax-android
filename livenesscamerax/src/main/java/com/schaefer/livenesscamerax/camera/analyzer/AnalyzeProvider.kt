@@ -3,8 +3,9 @@ package com.schaefer.livenesscamerax.camera.analyzer
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
+import com.schaefer.camera.analyzer.CameraXAnalyzer
+import com.schaefer.camera.processor.face.FaceFrameProcessor
+import com.schaefer.camera.processor.luminosity.LuminosityFrameProcessor
 import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.domain.model.AnalyzeType
 

@@ -9,6 +9,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.schaefer.camera.CameraX
+import com.schaefer.camera.callback.CameraXCallback
+import com.schaefer.camera.model.FaceResult
 import com.schaefer.core.extensions.observeOnce
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.extensions.shouldShowRequest
@@ -19,12 +22,9 @@ import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.domain.repository.ResultLivenessRepository
 import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.camera.CameraX
-import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
 import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS

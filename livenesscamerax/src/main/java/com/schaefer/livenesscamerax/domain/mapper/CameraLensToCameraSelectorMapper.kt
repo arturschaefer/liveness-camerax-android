@@ -1,10 +1,10 @@
 package com.schaefer.livenesscamerax.domain.mapper
 
 import androidx.camera.core.CameraSelector
+import com.schaefer.core.mapper.Mapper
 import com.schaefer.livenesscamerax.domain.model.CameraLens
 
-class CameraLensToCameraSelectorMapper :
-    com.schaefer.core.mapper.Mapper<CameraLens, CameraSelector> {
+class CameraLensToCameraSelectorMapper : Mapper<CameraLens, CameraSelector> {
 
     override fun map(item: CameraLens): CameraSelector {
         return when (item) {

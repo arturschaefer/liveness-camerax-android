@@ -3,13 +3,13 @@ package com.schaefer.livenesscamerax.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.schaefer.camera.model.FaceResult
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.core.viewmodel.StateViewModel
 import com.schaefer.domain.model.HeadMovement
 import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
