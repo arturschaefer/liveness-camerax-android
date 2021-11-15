@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera.detector
+package com.schaefer.camera.detector
 
 import android.annotation.SuppressLint
 import androidx.camera.core.ImageProxy
@@ -9,7 +9,7 @@ import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 
-internal class VisionFaceDetector : FrameFaceDetector {
+class VisionFaceDetector : FrameFaceDetector {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()
         .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
