@@ -3,16 +3,9 @@ package com.schaefer.livenesscamerax.di
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import com.schaefer.camera.CameraX
-import com.schaefer.camera.callback.CameraXCallback
-import com.schaefer.camera.detector.VisionFaceDetector
-import com.schaefer.camera.mapper.FaceToFaceResultMapper
-import com.schaefer.camera.model.FaceResult
-import com.schaefer.camera.processor.face.FaceFrameProcessor
-import com.schaefer.camera.processor.face.FaceFrameProcessorImpl
-import com.schaefer.camera.processor.luminosity.LuminosityFrameProcessor
-import com.schaefer.camera.processor.luminosity.LuminosityFrameProcessorFactory
+import com.schaefer.camera.core.callback.CameraXCallback
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.core.resourceprovider.ResourcesProviderFactory
 import com.schaefer.domain.EditPhotoUseCase
@@ -29,8 +22,6 @@ import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCaseFac
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 internal class LivenessCameraXContainer(private val application: Application) {
     val provideLivenessEntryPoint = LivenessEntryPoint
@@ -59,24 +50,6 @@ internal class LivenessCameraXContainer(private val application: Application) {
         return FileRepositoryFactory.apply {
             this.storageType = storageType
         }.create()
-    }
-
-    fun provideExecutorService(): ExecutorService {
-        return Executors.newSingleThreadExecutor()
-    }
-
-    fun provideLuminosityFrameProcessor(): LuminosityFrameProcessor {
-        return LuminosityFrameProcessorFactory.create()
-    }
-
-    fun provideFaceFrameProcessor(
-        lifecycleOwner: LifecycleOwner
-    ): FaceFrameProcessor {
-        return FaceFrameProcessorImpl(
-            lifecycleOwner.lifecycleScope,
-            FaceToFaceResultMapper(),
-            VisionFaceDetector()
-        )
     }
 
     fun provideCameraX(

@@ -3,7 +3,7 @@ package com.schaefer.livenesscamerax.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.core.viewmodel.StateViewModel

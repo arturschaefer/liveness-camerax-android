@@ -2,7 +2,7 @@ package com.schaefer.camera
 
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleObserver
-import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.domain.model.FaceResult
 import kotlinx.coroutines.flow.Flow
 
 interface CameraX {

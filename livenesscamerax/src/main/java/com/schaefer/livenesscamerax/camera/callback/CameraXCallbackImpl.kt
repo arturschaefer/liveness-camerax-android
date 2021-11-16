@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.camera.callback
 
-import com.schaefer.camera.callback.CameraXCallback
+import com.schaefer.camera.core.callback.CameraXCallback
 import com.schaefer.core.extensions.encoderFilePath
 import com.schaefer.domain.EditPhotoUseCase
 import com.schaefer.livenesscamerax.presentation.model.PhotoResult

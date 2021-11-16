@@ -12,14 +12,15 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.schaefer.camera.CameraX
-import com.schaefer.camera.callback.CameraXCallback
+import com.schaefer.camera.core.analyzer.AnalyzeProvider
+import com.schaefer.camera.core.callback.CameraXCallback
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.mapper.Mapper
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.domain.repository.FileRepository
 import com.schaefer.livenesscamerax.BuildConfig
-import com.schaefer.livenesscamerax.camera.analyzer.AnalyzeProvider
 import com.schaefer.livenesscamerax.di.LibraryModule.application
+import com.schaefer.livenesscamerax.domain.mapper.AnalyzeTypeToDomain
 import com.schaefer.livenesscamerax.domain.model.CameraLens
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import timber.log.Timber
@@ -41,7 +42,7 @@ internal class CameraXImpl(
 
     private val analyzerProvider by lazy {
         AnalyzeProvider.Builder(lifecycleOwner).apply {
-            analyzeType = settings.analyzeType
+            analyzeType = AnalyzeTypeToDomain().map(settings.analyzeType)
         }
     }
     private var camera: Camera? = null

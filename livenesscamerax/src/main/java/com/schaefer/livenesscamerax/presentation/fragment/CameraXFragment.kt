@@ -10,8 +10,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.schaefer.camera.CameraX
-import com.schaefer.camera.callback.CameraXCallback
-import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.core.callback.CameraXCallback
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.observeOnce
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.extensions.shouldShowRequest

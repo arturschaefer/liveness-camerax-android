@@ -1,6 +1,6 @@
 package com.schaefer.livenesscamerax.domain.repository.checkliveness
 
-import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.domain.model.HeadMovement
 import com.schaefer.domain.repository.CheckLivenessRepository
