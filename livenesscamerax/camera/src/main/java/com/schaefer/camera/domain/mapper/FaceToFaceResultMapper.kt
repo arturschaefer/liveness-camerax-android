@@ -1,7 +1,7 @@
-package com.schaefer.camera.mapper
+package com.schaefer.camera.domain.mapper
 
 import com.google.mlkit.vision.face.Face
-import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.domain.model.FaceResult
 
 class FaceToFaceResultMapper : com.schaefer.core.mapper.Mapper<Face, FaceResult> {
 

@@ -1,4 +1,4 @@
-package com.schaefer.camera.processor.face
+package com.schaefer.camera.core.processor.face
 
 import android.annotation.SuppressLint
 import android.media.Image
@@ -6,9 +6,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.face.Face
-import com.schaefer.camera.detector.VisionFaceDetector
-import com.schaefer.camera.mapper.FaceToFaceResultMapper
-import com.schaefer.camera.model.FaceResult
+import com.schaefer.camera.core.detector.VisionFaceDetector
+import com.schaefer.camera.domain.mapper.FaceToFaceResultMapper
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.getLuminosity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

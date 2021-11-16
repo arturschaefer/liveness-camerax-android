@@ -1,4 +1,4 @@
-package com.schaefer.camera.detector
+package com.schaefer.camera.core.detector
 
 import android.annotation.SuppressLint
 import androidx.camera.core.ImageProxy

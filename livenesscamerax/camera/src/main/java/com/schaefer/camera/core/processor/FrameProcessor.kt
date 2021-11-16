@@ -1,4 +1,4 @@
-package com.schaefer.camera.processor
+package com.schaefer.camera.core.processor
 
 import androidx.camera.core.ImageProxy
 

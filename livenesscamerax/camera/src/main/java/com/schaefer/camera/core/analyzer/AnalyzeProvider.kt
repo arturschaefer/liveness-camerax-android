@@ -1,18 +1,17 @@
-package com.schaefer.livenesscamerax.camera.analyzer
+package com.schaefer.camera.core.analyzer
 
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.schaefer.camera.analyzer.CameraXAnalyzer
-import com.schaefer.camera.processor.face.FaceFrameProcessor
-import com.schaefer.camera.processor.luminosity.LuminosityFrameProcessor
-import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.livenesscamerax.domain.model.AnalyzeType
+import com.schaefer.camera.core.processor.face.FaceFrameProcessor
+import com.schaefer.camera.core.processor.luminosity.LuminosityFrameProcessor
+import com.schaefer.camera.di.CameraModule.container
+import com.schaefer.domain.model.AnalyzeTypeDomain
 
-internal class AnalyzeProvider {
+class AnalyzeProvider {
 
     class Builder(private val lifecycleOwner: LifecycleOwner) {
-        var analyzeType = AnalyzeType.FACE_PROCESSOR
+        var analyzeType = AnalyzeTypeDomain.FACE_PROCESSOR
         var faceFrameProcessor: FaceFrameProcessor =
             container.provideFaceFrameProcessor(lifecycleOwner)
         var luminosityFrameProcessor: LuminosityFrameProcessor =
@@ -21,17 +20,23 @@ internal class AnalyzeProvider {
 
         private fun getAnalyzerType() =
             when (analyzeType) {
-                AnalyzeType.FACE_PROCESSOR -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
+                AnalyzeTypeDomain.FACE_PROCESSOR -> CameraXAnalyzer(
+                    lifecycleOwner.lifecycleScope
+                ).apply {
                     attachProcessor(
                         faceFrameProcessor
                     )
                 }
-                AnalyzeType.LUMINOSITY -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
+                AnalyzeTypeDomain.LUMINOSITY -> CameraXAnalyzer(
+                    lifecycleOwner.lifecycleScope
+                ).apply {
                     attachProcessor(
                         luminosityFrameProcessor
                     )
                 }
-                AnalyzeType.COMPLETE -> CameraXAnalyzer(lifecycleOwner.lifecycleScope).apply {
+                AnalyzeTypeDomain.COMPLETE -> CameraXAnalyzer(
+                    lifecycleOwner.lifecycleScope
+                ).apply {
                     attachProcessor(
                         luminosityFrameProcessor,
                         faceFrameProcessor

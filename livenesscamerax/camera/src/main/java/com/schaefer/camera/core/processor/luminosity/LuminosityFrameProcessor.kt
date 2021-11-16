@@ -1,6 +1,6 @@
-package com.schaefer.camera.processor.luminosity
+package com.schaefer.camera.core.processor.luminosity
 
-import com.schaefer.camera.processor.FrameProcessor
+import com.schaefer.camera.core.processor.FrameProcessor
 import kotlinx.coroutines.flow.Flow
 
 interface LuminosityFrameProcessor : FrameProcessor {

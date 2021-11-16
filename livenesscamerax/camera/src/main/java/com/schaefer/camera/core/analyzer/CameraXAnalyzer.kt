@@ -1,8 +1,8 @@
-package com.schaefer.camera.analyzer
+package com.schaefer.camera.core.analyzer
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import com.schaefer.camera.processor.FrameProcessor
+import com.schaefer.camera.core.processor.FrameProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

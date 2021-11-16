@@ -1,4 +1,4 @@
-package com.schaefer.camera.model
+package com.schaefer.camera.domain.model
 
 import android.graphics.Rect
 

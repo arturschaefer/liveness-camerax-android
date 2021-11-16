@@ -1,4 +1,4 @@
-package com.schaefer.camera.callback
+package com.schaefer.camera.core.callback
 
 import java.io.File
 
