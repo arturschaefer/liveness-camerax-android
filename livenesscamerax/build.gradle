@@ -23,6 +23,10 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    kotlinOptions {
+        jvmTarget = versions.jvmTarget
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -33,9 +37,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+
     buildFeatures {
         viewBinding true
     }
@@ -46,6 +48,9 @@ android {
 }
 
 dependencies {
+    implementation project(path: ":livenesscamerax:core")
+    implementation project(path: ":livenesscamerax:domain")
+    implementation project(path: ":livenesscamerax:camera")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
 
@@ -71,9 +76,6 @@ dependencies {
     //Square
     implementation "com.jakewharton.timber:timber:$versions.timber"
 
-    //Apache
-    implementation "org.apache.commons:commons-io:$versions.apacheCommons"
-    
     //Tests
     testImplementation "junit:junit:$versions.junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"

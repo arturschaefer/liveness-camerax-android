@@ -10,27 +10,24 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.schaefer.camera.CameraX
+import com.schaefer.camera.core.analyzer.AnalyzeProvider
+import com.schaefer.camera.core.callback.CameraXCallback
+import com.schaefer.core.extensions.orFalse
+import com.schaefer.domain.model.exceptions.LivenessCameraXException
+import com.schaefer.domain.repository.FileRepository
 import com.schaefer.livenesscamerax.BuildConfig
-import com.schaefer.livenesscamerax.camera.analyzer.AnalyzeProvider
-import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.core.extensions.orFalse
 import com.schaefer.livenesscamerax.di.LibraryModule.application
-import com.schaefer.livenesscamerax.domain.mapper.CameraLensToCameraSelectorMapper
-import com.schaefer.livenesscamerax.domain.model.exceptions.LivenessCameraXException
-import com.schaefer.livenesscamerax.domain.repository.file.FileRepository
+import com.schaefer.livenesscamerax.domain.model.toCameraSelector
+import com.schaefer.livenesscamerax.domain.model.toDomain
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import timber.log.Timber
 import java.util.concurrent.Future
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 internal class CameraXImpl(
     private val settings: CameraSettings,
     private val cameraXCallback: CameraXCallback,
     private val lifecycleOwner: LifecycleOwner,
-    private val cameraLensToCameraSelectorMapper: CameraLensToCameraSelectorMapper,
     private val fileRepository: FileRepository,
 ) : CameraX, DefaultLifecycleObserver {
 
@@ -42,15 +39,15 @@ internal class CameraXImpl(
 
     private val analyzerProvider by lazy {
         AnalyzeProvider.Builder(lifecycleOwner).apply {
-            analyzeType = settings.analyzeType
+            analyzeType = settings.analyzeType.toDomain()
         }
     }
     private var camera: Camera? = null
 
     //region - Camera settings and creators
-    override fun getFacesFlowable() = analyzerProvider.faceFrameProcessor.getData()
+    override fun observeFaceList() = analyzerProvider.faceFrameProcessor.observeFaceList()
 
-    override fun getLuminosity() = analyzerProvider.luminosityFrameProcessor.getLuminosity()
+    override fun observeLuminosity() = analyzerProvider.luminosityFrameProcessor.observeLuminosity()
 
     override fun getLifecycleObserver() = this
 
@@ -117,7 +114,7 @@ internal class CameraXImpl(
             preview.setSurfaceProvider(previewView.surfaceProvider)
         }
         val analyzer = analyzerProvider.build()
-        val cameraSelector = cameraLensToCameraSelectorMapper.map(settings.cameraLens)
+        val cameraSelector = settings.cameraLens.toCameraSelector()
 
         try {
             cameraProvider.unbindAll()

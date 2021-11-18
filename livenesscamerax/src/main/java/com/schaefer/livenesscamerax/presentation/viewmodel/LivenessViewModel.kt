@@ -3,14 +3,14 @@ package com.schaefer.livenesscamerax.presentation.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.schaefer.camera.domain.model.FaceResult
+import com.schaefer.core.extensions.orFalse
+import com.schaefer.core.resourceprovider.ResourcesProvider
+import com.schaefer.core.viewmodel.StateViewModel
+import com.schaefer.domain.model.HeadMovement
+import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.core.extensions.orFalse
-import com.schaefer.livenesscamerax.core.resourceprovider.ResourcesProvider
-import com.schaefer.livenesscamerax.core.viewmodel.StateViewModel
-import com.schaefer.livenesscamerax.domain.model.FaceResult
-import com.schaefer.livenesscamerax.domain.model.HeadMovement
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
-import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepository
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -23,7 +23,7 @@ private const val MINIMUM_LUMINOSITY = 100
 @InternalCoroutinesApi
 internal class LivenessViewModel(
     private val resourcesProvider: ResourcesProvider,
-    private val checkLivenessRepository: CheckLivenessRepository,
+    private val checkLivenessRepository: CheckLivenessRepository<FaceResult>,
 ) : StateViewModel<LivenessViewState>(LivenessViewState()) {
     // UI State
     private val _state = LivenessViewState()
@@ -73,11 +73,8 @@ internal class LivenessViewModel(
 
         if (!moreThanOneFaceMutable) {
             setState(_state.livenessMessage(getMessage()))
-
             val face = listFaceResult.first()
             checkFaceLiveness(face)
-
-            // TODO handle accessibility of people with one single eye
             atLeastOneEyeIsOpenMutable = checkLivenessRepository.validateAtLeastOneEyeIsOpen(face)
         } else {
             requestedSteps.apply {
