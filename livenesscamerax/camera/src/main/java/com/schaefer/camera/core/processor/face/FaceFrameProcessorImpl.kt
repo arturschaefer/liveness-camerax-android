@@ -7,7 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.face.Face
 import com.schaefer.camera.core.detector.VisionFaceDetector
-import com.schaefer.camera.domain.mapper.FaceToFaceResultMapper
+import com.schaefer.camera.domain.mapper.map
 import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.getLuminosity
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 
 class FaceFrameProcessorImpl(
     private val coroutineScope: CoroutineScope,
-    private val mapper: FaceToFaceResultMapper,
     private val detector: VisionFaceDetector,
 ) : FaceFrameProcessor {
 
@@ -42,7 +41,7 @@ class FaceFrameProcessorImpl(
         listFace: List<Face>,
         imageProxy: ImageProxy
     ): List<FaceResult> = listFace.map { face ->
-        addLuminosity(mapper.map(face), imageProxy.image)
+        addLuminosity(face.map(), imageProxy.image)
     }
 
     private fun addLuminosity(faceResult: FaceResult, image: Image?): FaceResult {

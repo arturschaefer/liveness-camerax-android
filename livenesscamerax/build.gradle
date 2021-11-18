@@ -76,9 +76,6 @@ dependencies {
     //Square
     implementation "com.jakewharton.timber:timber:$versions.timber"
 
-    //Apache
-    implementation "org.apache.commons:commons-io:$versions.apacheCommons"
-
     //Tests
     testImplementation "junit:junit:$versions.junit"
     androidTestImplementation "androidx.test.ext:junit:$versions.junit_ext"

@@ -2,7 +2,6 @@ package com.schaefer.livenesscamerax.camera
 
 import android.view.Surface
 import androidx.camera.core.Camera
-import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
@@ -15,13 +14,12 @@ import com.schaefer.camera.CameraX
 import com.schaefer.camera.core.analyzer.AnalyzeProvider
 import com.schaefer.camera.core.callback.CameraXCallback
 import com.schaefer.core.extensions.orFalse
-import com.schaefer.core.mapper.Mapper
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.domain.repository.FileRepository
 import com.schaefer.livenesscamerax.BuildConfig
 import com.schaefer.livenesscamerax.di.LibraryModule.application
-import com.schaefer.livenesscamerax.domain.mapper.AnalyzeTypeToDomain
-import com.schaefer.livenesscamerax.domain.model.CameraLens
+import com.schaefer.livenesscamerax.domain.model.toCameraSelector
+import com.schaefer.livenesscamerax.domain.model.toDomain
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import timber.log.Timber
 import java.util.concurrent.Future
@@ -30,7 +28,6 @@ internal class CameraXImpl(
     private val settings: CameraSettings,
     private val cameraXCallback: CameraXCallback,
     private val lifecycleOwner: LifecycleOwner,
-    private val cameraLensToCameraSelectorMapper: Mapper<CameraLens, CameraSelector>,
     private val fileRepository: FileRepository,
 ) : CameraX, DefaultLifecycleObserver {
 
@@ -42,7 +39,7 @@ internal class CameraXImpl(
 
     private val analyzerProvider by lazy {
         AnalyzeProvider.Builder(lifecycleOwner).apply {
-            analyzeType = AnalyzeTypeToDomain().map(settings.analyzeType)
+            analyzeType = settings.analyzeType.toDomain()
         }
     }
     private var camera: Camera? = null
@@ -117,7 +114,7 @@ internal class CameraXImpl(
             preview.setSurfaceProvider(previewView.surfaceProvider)
         }
         val analyzer = analyzerProvider.build()
-        val cameraSelector = cameraLensToCameraSelectorMapper.map(settings.cameraLens)
+        val cameraSelector = settings.cameraLens.toCameraSelector()
 
         try {
             cameraProvider.unbindAll()

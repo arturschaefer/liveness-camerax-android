@@ -2,6 +2,7 @@ package com.schaefer.livenesscamerax.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.schaefer.camera.di.CameraModule
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxActivityBinding
 import com.schaefer.livenesscamerax.di.LibraryModule
@@ -19,6 +20,7 @@ class LivenessCameraXActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         LibraryModule.initializeDI(application)
+        CameraModule.initializeDI(application)
     }
 
     override fun onBackPressed() {

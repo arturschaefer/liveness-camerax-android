@@ -2,6 +2,8 @@ package com.schaefer.livenesscamerax.presentation.navigation
 
 import android.content.Context
 import android.content.Intent
+import com.schaefer.domain.model.LivenessCameraXResultDomain
+import com.schaefer.livenesscamerax.domain.mapper.toPresentation
 import com.schaefer.livenesscamerax.presentation.LivenessCameraXActivity
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
 import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
@@ -10,7 +12,7 @@ internal const val EXTRAS_LIVENESS_CAMERA_SETTINGS = "liveness_camerax_camera_se
 
 object LivenessEntryPoint {
 
-    private var callbackResult: ((LivenessCameraXResult) -> Unit)? = null
+    var callbackResult: ((LivenessCameraXResult) -> Unit) = {}
 
     fun startLiveness(
         context: Context,
@@ -25,7 +27,7 @@ object LivenessEntryPoint {
         callbackResult = callback
     }
 
-    internal fun postResultCallback(livenessCameraXResult: LivenessCameraXResult) {
-        callbackResult?.invoke(livenessCameraXResult)
+    internal fun postResultCallback(livenessCameraXResult: LivenessCameraXResultDomain) {
+        callbackResult.invoke(livenessCameraXResult.toPresentation())
     }
 }

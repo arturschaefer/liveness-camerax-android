@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.domain.usecase.editphoto
+package com.schaefer.camera.domain.usecase
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -25,7 +25,7 @@ private const val ORIENTATION_270 = 270F
 private const val MARSHMALLOW = 23
 private const val IMAGE_COMPRESS_QUALITY = 80
 
-internal class EditPhotoUseCaseImpl(private val context: Context) : EditPhotoUseCase {
+class EditPhotoUseCaseImpl(private val context: Context) : EditPhotoUseCase {
 
     override fun editPhotoFile(photoFile: File) {
         runCatching {

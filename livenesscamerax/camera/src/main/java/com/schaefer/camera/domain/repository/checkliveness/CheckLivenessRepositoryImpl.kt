@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.domain.repository.checkliveness
+package com.schaefer.camera.domain.repository.checkliveness
 
 import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.orFalse

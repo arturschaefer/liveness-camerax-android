@@ -1,9 +1,8 @@
-package com.schaefer.livenesscamerax.domain.repository.file
+package com.schaefer.camera.domain.repository.file
 
 import android.content.Context
+import com.schaefer.domain.model.StorageTypeDomain
 import com.schaefer.domain.repository.FileRepository
-import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.domain.model.StorageType
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.text.SimpleDateFormat
@@ -12,9 +11,10 @@ import java.util.Locale
 private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
 private const val SUFFIX_PHOTO_FILE = ".jpg"
 private const val DIR_NAME = "photos_liveness"
+private const val APP_NAME = "LivenessCameraX"
 
-internal class FileRepositoryImpl(
-    private val storageType: StorageType,
+class FileRepositoryImpl(
+    private val storageType: StorageTypeDomain,
     private val context: Context
 ) : FileRepository {
 
@@ -44,8 +44,8 @@ internal class FileRepositoryImpl(
     private fun provideSimpleDateFormatter() = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
 
     private fun provideOutputDirectory(): File = when (storageType) {
-        StorageType.INTERNAL -> getInternalStorage()
-        StorageType.EXTERNAL -> getExternalDirectory()
+        StorageTypeDomain.INTERNAL -> getInternalStorage()
+        StorageTypeDomain.EXTERNAL -> getExternalDirectory()
     }
 
     private fun getInternalStorage(): File {
@@ -54,7 +54,7 @@ internal class FileRepositoryImpl(
 
     private fun getExternalDirectory(): File {
         val mediaDir = context.filesDir.let {
-            File(it, context.getString(R.string.liveness_camerax_app_name)).apply { mkdirs() }
+            File(it, APP_NAME).apply { mkdirs() }
         }
         return if (mediaDir.exists())
             mediaDir else context.filesDir

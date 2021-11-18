@@ -48,4 +48,7 @@ dependencies {
     implementation "androidx.camera:camera-camera2:$versions.cameraX"
     implementation "androidx.camera:camera-lifecycle:$versions.cameraX"
     implementation "androidx.camera:camera-view:$versions.cameraXOthers"
+
+    //Apache
+    implementation "org.apache.commons:commons-io:$versions.apacheCommons"
 }
