@@ -50,6 +50,7 @@ android {
 dependencies {
     implementation project(path: ":livenesscamerax:core")
     implementation project(path: ":livenesscamerax:domain")
+    implementation project(path: ":livenesscamerax:camera")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin"
 
@@ -74,9 +75,6 @@ dependencies {
 
     //Square
     implementation "com.jakewharton.timber:timber:$versions.timber"
-
-    //Apache
-    implementation "org.apache.commons:commons-io:$versions.apacheCommons"
 
     //Tests
     testImplementation "junit:junit:$versions.junit"

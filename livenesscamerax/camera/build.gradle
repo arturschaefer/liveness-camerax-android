@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+apply from: "$rootDir/dependencies.gradle"
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = versions.jvmTarget
+    }
+}
+
+dependencies {
+    implementation project(path: ":livenesscamerax:domain")
+    implementation project(path: ":livenesscamerax:core")
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+    implementation "androidx.core:core-ktx:$versions.ktx"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+
+    //Google Services
+    implementation "com.google.android.gms:play-services-mlkit-face-detection:$versions.faceDetection"
+    implementation "com.google.mlkit:vision-common:$versions.vision"
+
+    //CameraX
+    implementation "androidx.camera:camera-camera2:$versions.cameraX"
+    implementation "androidx.camera:camera-lifecycle:$versions.cameraX"
+    implementation "androidx.camera:camera-view:$versions.cameraXOthers"
+
+    //Apache
+    implementation "org.apache.commons:commons-io:$versions.apacheCommons"
+}

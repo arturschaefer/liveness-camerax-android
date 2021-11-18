@@ -3,39 +3,30 @@ package com.schaefer.livenesscamerax.di
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
+import com.schaefer.camera.CameraX
+import com.schaefer.camera.core.callback.CameraXCallback
+import com.schaefer.camera.domain.model.FaceResult
+import com.schaefer.camera.domain.repository.checkliveness.CheckLivenessRepositoryFactory
+import com.schaefer.camera.domain.repository.file.FileRepositoryFactory
+import com.schaefer.camera.domain.repository.resultliveness.ResultLivenessRepositoryFactory
+import com.schaefer.camera.domain.usecase.EditPhotoUseCaseFactory
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.core.resourceprovider.ResourcesProviderFactory
 import com.schaefer.domain.EditPhotoUseCase
+import com.schaefer.domain.model.PhotoResultDomain
 import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.domain.repository.FileRepository
 import com.schaefer.domain.repository.ResultLivenessRepository
-import com.schaefer.livenesscamerax.camera.CameraX
 import com.schaefer.livenesscamerax.camera.CameraXImpl
-import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.camera.detector.VisionFaceDetector
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.face.FaceFrameProcessorImpl
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessor
-import com.schaefer.livenesscamerax.camera.processor.luminosity.LuminosityFrameProcessorImpl
-import com.schaefer.livenesscamerax.domain.mapper.CameraLensToCameraSelectorMapper
-import com.schaefer.livenesscamerax.domain.mapper.FaceToFaceResultMapper
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.domain.model.StorageType
-import com.schaefer.livenesscamerax.domain.repository.checkliveness.CheckLivenessRepositoryFactory
-import com.schaefer.livenesscamerax.domain.repository.file.FileRepositoryFactory
-import com.schaefer.livenesscamerax.domain.repository.resultliveness.ResultLivenessRepositoryFactory
-import com.schaefer.livenesscamerax.domain.usecase.editphoto.EditPhotoUseCaseFactory
+import com.schaefer.livenesscamerax.domain.model.toDomain
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 internal class LivenessCameraXContainer(private val application: Application) {
-    val provideLivenessEntryPoint = LivenessEntryPoint
+    private val provideLivenessEntryPoint = LivenessEntryPoint
 
-    fun provideContext(): Context {
+    private fun provideContext(): Context {
         return application.applicationContext
     }
 
@@ -43,40 +34,22 @@ internal class LivenessCameraXContainer(private val application: Application) {
         return ResourcesProviderFactory(provideContext()).create()
     }
 
-    fun provideResultLivenessRepository(): ResultLivenessRepository<PhotoResult> {
-        return ResultLivenessRepositoryFactory.create()
+    fun provideEditPhotoUseCase(): EditPhotoUseCase {
+        return EditPhotoUseCaseFactory.create()
+    }
+
+    fun provideResultLivenessRepository(): ResultLivenessRepository<PhotoResultDomain> {
+        return ResultLivenessRepositoryFactory.apply {
+            resultCallback = provideLivenessEntryPoint::postResultCallback
+        }.create()
     }
 
     fun provideCheckLivenessRepository(): CheckLivenessRepository<FaceResult> {
         return CheckLivenessRepositoryFactory.create()
     }
 
-    fun provideEditPhotoUseCase(): EditPhotoUseCase {
-        return EditPhotoUseCaseFactory.create()
-    }
-
     private fun provideFileRepository(storageType: StorageType): FileRepository {
-        return FileRepositoryFactory.apply {
-            this.storageType = storageType
-        }.create()
-    }
-
-    fun provideExecutorService(): ExecutorService {
-        return Executors.newSingleThreadExecutor()
-    }
-
-    fun provideLuminosityFrameProcessor(): LuminosityFrameProcessor {
-        return LuminosityFrameProcessorImpl()
-    }
-
-    fun provideFaceFrameProcessor(
-        lifecycleOwner: LifecycleOwner
-    ): FaceFrameProcessor {
-        return FaceFrameProcessorImpl(
-            lifecycleOwner.lifecycleScope,
-            FaceToFaceResultMapper(),
-            VisionFaceDetector()
-        )
+        return FileRepositoryFactory.apply { this.storageType = storageType.toDomain() }.create()
     }
 
     fun provideCameraX(
@@ -88,7 +61,6 @@ internal class LivenessCameraXContainer(private val application: Application) {
             settings = cameraSettings,
             cameraXCallback = cameraXCallback,
             lifecycleOwner = lifecycleOwner,
-            cameraLensToCameraSelectorMapper = CameraLensToCameraSelectorMapper(),
             fileRepository = provideFileRepository(cameraSettings.storageType)
         )
     }

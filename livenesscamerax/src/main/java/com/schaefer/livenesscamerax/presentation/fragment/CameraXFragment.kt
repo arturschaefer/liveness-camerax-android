@@ -9,24 +9,24 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.schaefer.camera.CameraX
+import com.schaefer.camera.core.callback.CameraXCallback
+import com.schaefer.camera.core.callback.CameraXCallbackImpl
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.extensions.observeOnce
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.extensions.shouldShowRequest
 import com.schaefer.core.extensions.snack
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.domain.EditPhotoUseCase
+import com.schaefer.domain.model.PhotoResultDomain
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.domain.repository.ResultLivenessRepository
 import com.schaefer.livenesscamerax.R
-import com.schaefer.livenesscamerax.camera.CameraX
-import com.schaefer.livenesscamerax.camera.callback.CameraXCallback
-import com.schaefer.livenesscamerax.camera.callback.CameraXCallbackImpl
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import com.schaefer.livenesscamerax.presentation.model.PhotoResult
 import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModelFactory
@@ -52,7 +52,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private val checkLivenessRepository: CheckLivenessRepository<FaceResult> by lazy {
         container.provideCheckLivenessRepository()
     }
-    private val resultLivenessRepository: ResultLivenessRepository<PhotoResult> by lazy {
+    private val resultLivenessRepository: ResultLivenessRepository<PhotoResultDomain> by lazy {
         container.provideResultLivenessRepository()
     }
     private val editPhotoUseCase: EditPhotoUseCase by lazy { container.provideEditPhotoUseCase() }
@@ -164,7 +164,7 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         binding.tvStepText.isVisible = true
     }
 
-    private fun handlePictureSuccess(photoResult: PhotoResult, takenByUser: Boolean) {
+    private fun handlePictureSuccess(photoResult: PhotoResultDomain, takenByUser: Boolean) {
         if (takenByUser) {
             val filesPath = cameraX.getAllPictures()
             resultLivenessRepository.success(photoResult, filesPath)

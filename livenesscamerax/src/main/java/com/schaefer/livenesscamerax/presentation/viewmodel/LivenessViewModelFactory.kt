@@ -2,9 +2,9 @@ package com.schaefer.livenesscamerax.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.domain.repository.CheckLivenessRepository
-import com.schaefer.livenesscamerax.domain.model.FaceResult
 import kotlinx.coroutines.InternalCoroutinesApi
 
 // Reference https://github.com/android/architecture-components-samples/blob/master/BasicRxJavaSampleKotlin/app/src/main/java/com/example/android/observability/ui/ViewModelFactory.kt
