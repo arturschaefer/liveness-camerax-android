@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.camera
+package com.schaefer.camera
 
 import android.view.Surface
 import androidx.camera.core.Camera
@@ -10,22 +10,18 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.schaefer.camera.CameraX
 import com.schaefer.camera.core.analyzer.AnalyzeProvider
 import com.schaefer.camera.core.callback.CameraXCallback
+import com.schaefer.camera.di.CameraModule.application
+import com.schaefer.camera.domain.mapper.toCameraSelector
 import com.schaefer.core.extensions.orFalse
+import com.schaefer.domain.model.CameraSettingsDomain
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.domain.repository.FileRepository
-import com.schaefer.livenesscamerax.BuildConfig
-import com.schaefer.livenesscamerax.di.LibraryModule.application
-import com.schaefer.livenesscamerax.domain.model.toCameraSelector
-import com.schaefer.livenesscamerax.domain.model.toDomain
-import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import timber.log.Timber
 import java.util.concurrent.Future
 
 internal class CameraXImpl(
-    private val settings: CameraSettings,
+    private val settings: CameraSettingsDomain,
     private val cameraXCallback: CameraXCallback,
     private val lifecycleOwner: LifecycleOwner,
     private val fileRepository: FileRepository,
@@ -38,9 +34,7 @@ internal class CameraXImpl(
     }
 
     private val analyzerProvider by lazy {
-        AnalyzeProvider.Builder(lifecycleOwner).apply {
-            analyzeType = settings.analyzeType.toDomain()
-        }
+        AnalyzeProvider.Builder().apply { analyzeType = settings.analyzeType }
     }
     private var camera: Camera? = null
 
@@ -128,7 +122,6 @@ internal class CameraXImpl(
 
             enableFlash(settings.isFlashEnabled)
         } catch (ex: Exception) {
-            Timber.e(ex.toString())
             cameraXCallback.onError(
                 LivenessCameraXException.StartCameraException(
                     ex.message,

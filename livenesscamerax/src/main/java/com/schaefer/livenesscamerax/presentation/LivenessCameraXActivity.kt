@@ -19,6 +19,10 @@ class LivenessCameraXActivity : AppCompatActivity() {
         binding = LivenessCameraxActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initializeModules()
+    }
+
+    private fun initializeModules() {
         LibraryModule.initializeDI(application)
         CameraModule.initializeDI(application)
     }
