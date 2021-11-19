@@ -5,7 +5,7 @@ import com.schaefer.camera.di.CameraModule.container
 import com.schaefer.core.factory.Factory
 import com.schaefer.domain.EditPhotoUseCase
 
-object EditPhotoUseCaseFactory : Factory<EditPhotoUseCase> {
+internal object EditPhotoUseCaseFactory : Factory<EditPhotoUseCase> {
 
     private val context: Context by lazy { container.provideContext() }
 

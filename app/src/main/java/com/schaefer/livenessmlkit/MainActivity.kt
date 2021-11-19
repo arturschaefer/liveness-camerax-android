@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import com.google.android.material.chip.Chip
+import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
 import com.schaefer.livenesscamerax.domain.model.StorageType
-import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import com.schaefer.livenesscamerax.presentation.navigation.LivenessEntryPoint
+import com.schaefer.livenesscamerax.navigation.LivenessEntryPoint
 import com.schaefer.livenessmlkit.adapter.ImageListAdapter
 import com.schaefer.livenessmlkit.databinding.ActivityMainBinding
 

@@ -13,7 +13,7 @@ private const val SUFFIX_PHOTO_FILE = ".jpg"
 private const val DIR_NAME = "photos_liveness"
 private const val APP_NAME = "LivenessCameraX"
 
-class FileRepositoryImpl(
+internal class FileRepositoryImpl(
     private val storageType: StorageTypeDomain,
     private val context: Context
 ) : FileRepository {

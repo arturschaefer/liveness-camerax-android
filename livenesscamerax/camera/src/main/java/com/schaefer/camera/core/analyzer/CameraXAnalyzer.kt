@@ -6,7 +6,7 @@ import com.schaefer.camera.core.processor.FrameProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class CameraXAnalyzer(
+internal class CameraXAnalyzer(
     private val coroutineScope: CoroutineScope
 ) : ImageAnalysis.Analyzer {
 
