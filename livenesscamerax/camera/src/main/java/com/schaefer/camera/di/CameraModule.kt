@@ -1,9 +1,11 @@
 package com.schaefer.camera.di
 
 import android.app.Application
+import androidx.lifecycle.LifecycleOwner
 
 object CameraModule {
-    val container: CameraContainer by lazy { CameraContainer() }
+    internal val container: CameraContainer by lazy { CameraContainer() }
+    internal lateinit var lifecycleOwner: LifecycleOwner
 
     @Volatile
     lateinit var application: Application

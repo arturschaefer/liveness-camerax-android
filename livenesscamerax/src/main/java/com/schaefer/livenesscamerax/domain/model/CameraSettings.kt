@@ -1,11 +1,7 @@
-package com.schaefer.livenesscamerax.presentation.model
+package com.schaefer.livenesscamerax.domain.model
 
 import android.os.Parcelable
-import com.schaefer.livenesscamerax.domain.model.AnalyzeType
-import com.schaefer.livenesscamerax.domain.model.CameraLens
-import com.schaefer.livenesscamerax.domain.model.CaptureQuality
-import com.schaefer.livenesscamerax.domain.model.StepLiveness
-import com.schaefer.livenesscamerax.domain.model.StorageType
+import com.schaefer.domain.model.CameraSettingsDomain
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -24,3 +20,17 @@ data class CameraSettings(
         StepLiveness.STEP_BLINK,
     )
 ) : Parcelable
+
+internal fun CameraSettings.toDomain(): CameraSettingsDomain {
+    return CameraSettingsDomain(
+        cameraLens = this.cameraLens.toDomain(),
+        captureQuality = this.captureQuality.toDomain(),
+        storageType = this.storageType.toDomain(),
+        takeAutomaticPicture = this.takeAutomaticPicture,
+        isFlashEnabled = this.isFlashEnabled,
+        isZoomEnabled = this.isZoomEnabled,
+        isAutoFocusEnabled = this.isAutoFocusEnabled,
+        analyzeType = this.analyzeType.toDomain(),
+        livenessStepList = this.livenessStepList.map { it.toDomain() }
+    )
+}

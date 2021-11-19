@@ -11,14 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.schaefer.camera.CameraX
 import com.schaefer.camera.core.callback.CameraXCallback
-import com.schaefer.camera.core.callback.CameraXCallbackImpl
+import com.schaefer.camera.core.callback.CameraXCallbackFactory
 import com.schaefer.camera.domain.model.FaceResult
+import com.schaefer.camera.navigation.CameraXNavigation
 import com.schaefer.core.extensions.observeOnce
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.extensions.shouldShowRequest
 import com.schaefer.core.extensions.snack
 import com.schaefer.core.resourceprovider.ResourcesProvider
-import com.schaefer.domain.EditPhotoUseCase
 import com.schaefer.domain.model.PhotoResultDomain
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
 import com.schaefer.domain.repository.CheckLivenessRepository
@@ -26,8 +26,9 @@ import com.schaefer.domain.repository.ResultLivenessRepository
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
 import com.schaefer.livenesscamerax.di.LibraryModule.container
-import com.schaefer.livenesscamerax.presentation.model.CameraSettings
-import com.schaefer.livenesscamerax.presentation.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
+import com.schaefer.livenesscamerax.domain.model.CameraSettings
+import com.schaefer.livenesscamerax.domain.model.toDomain
+import com.schaefer.livenesscamerax.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,21 +56,22 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
     private val resultLivenessRepository: ResultLivenessRepository<PhotoResultDomain> by lazy {
         container.provideResultLivenessRepository()
     }
-    private val editPhotoUseCase: EditPhotoUseCase by lazy { container.provideEditPhotoUseCase() }
     private val livenessViewModel: LivenessViewModel by viewModels {
         LivenessViewModelFactory(resourceProvider, checkLivenessRepository)
     }
 
     private val cameraXCallback: CameraXCallback by lazy {
-        CameraXCallbackImpl(
-            ::handlePictureSuccess,
-            resultLivenessRepository::error,
-            editPhotoUseCase,
-        )
+        CameraXCallbackFactory.apply {
+            onImageSavedAction = ::handlePictureSuccess
+            onErrorAction = resultLivenessRepository::error
+        }.create()
     }
 
     private val cameraX: CameraX by lazy {
-        container.provideCameraX(cameraSettings, cameraXCallback, this)
+        CameraXNavigation(this).provideCameraXModule(
+            cameraSettings.toDomain(),
+            cameraXCallback
+        )
     }
 
     private val cameraManifest = Manifest.permission.CAMERA

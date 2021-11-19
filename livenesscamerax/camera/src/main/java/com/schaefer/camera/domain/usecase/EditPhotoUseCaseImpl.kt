@@ -25,7 +25,7 @@ private const val ORIENTATION_270 = 270F
 private const val MARSHMALLOW = 23
 private const val IMAGE_COMPRESS_QUALITY = 80
 
-class EditPhotoUseCaseImpl(private val context: Context) : EditPhotoUseCase {
+internal class EditPhotoUseCaseImpl(private val context: Context) : EditPhotoUseCase {
 
     override fun editPhotoFile(photoFile: File) {
         runCatching {

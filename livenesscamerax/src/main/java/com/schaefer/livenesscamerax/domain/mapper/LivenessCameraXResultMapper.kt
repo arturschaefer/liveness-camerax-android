@@ -1,7 +1,7 @@
 package com.schaefer.livenesscamerax.domain.mapper
 
 import com.schaefer.domain.model.LivenessCameraXResultDomain
-import com.schaefer.livenesscamerax.presentation.model.LivenessCameraXResult
+import com.schaefer.livenesscamerax.domain.model.LivenessCameraXResult
 
 fun LivenessCameraXResultDomain.toPresentation(): LivenessCameraXResult {
     return LivenessCameraXResult(

@@ -1,4 +1,4 @@
-package com.schaefer.livenesscamerax.presentation.model
+package com.schaefer.livenesscamerax.domain.model
 
 data class LivenessCameraXError(
     val message: String,
