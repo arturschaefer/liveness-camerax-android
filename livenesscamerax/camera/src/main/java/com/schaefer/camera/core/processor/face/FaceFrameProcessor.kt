@@ -4,6 +4,6 @@ import com.schaefer.camera.core.processor.FrameProcessor
 import com.schaefer.camera.domain.model.FaceResult
 import kotlinx.coroutines.flow.Flow
 
-interface FaceFrameProcessor : FrameProcessor {
+internal interface FaceFrameProcessor : FrameProcessor {
     fun observeFaceList(): Flow<List<FaceResult>>
 }
