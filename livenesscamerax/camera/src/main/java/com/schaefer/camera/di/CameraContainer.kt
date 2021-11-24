@@ -2,6 +2,7 @@ package com.schaefer.camera.di
 
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.schaefer.camera.CameraX
 import com.schaefer.camera.CameraXImpl
 import com.schaefer.camera.core.callback.CameraXCallback
@@ -17,12 +18,17 @@ import com.schaefer.domain.EditPhotoUseCase
 import com.schaefer.domain.model.CameraSettingsDomain
 import com.schaefer.domain.model.StorageTypeDomain
 import com.schaefer.domain.repository.FileRepository
+import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 internal class CameraContainer {
     fun provideContext(): Context {
         return application.applicationContext
+    }
+
+    fun provideCoroutineScope(): CoroutineScope {
+        return CameraModule.lifecycleOwner.lifecycleScope
     }
 
     fun provideExecutorService(): ExecutorService {
