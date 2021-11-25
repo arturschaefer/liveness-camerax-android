@@ -8,13 +8,13 @@ ext.versions = [
 
         //gradle plugins
         gradle           : '7.0.3',
-        kotlin           : '1.5.31',
+        kotlin           : '1.6.0',
         jvmTarget        : '1.8',
         ktx              : '1.7.0',
 
         //CameraX
         cameraX          : '1.0.2',
-        cameraXOthers    : '1.0.0-alpha30',
+        cameraXOthers    : '1.0.0-alpha31',
 
         //ML Kit
         mlkit            : '16.0.5',
@@ -40,9 +40,9 @@ ext.versions = [
         mockito_kotlin   : '2.2.0',
 
         //UI
-        appcompat        : '1.3.1',
-        constraintlayout : '2.1.1',
-        fragment         : '1.3.6',
+        appcompat        : '1.4.0',
+        constraintlayout : '2.1.2',
+        fragment         : '1.4.0',
         activity         : '1.4.0',
         cardview         : '1.0.0',
         material         : '1.4.0',
