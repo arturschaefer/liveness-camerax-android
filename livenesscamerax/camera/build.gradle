@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id "de.mannodermaus.android-junit5"
 }
 
 apply from: "$rootDir/dependencies.gradle"
@@ -51,8 +50,4 @@ dependencies {
 
     //Apache
     implementation "org.apache.commons:commons-io:$versions.apacheCommons"
-
-    testImplementation "io.mockk:mockk:$versions.mockk"
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$versions.jupiterJunit")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$versions.jupiterJunitEngine")
 }
