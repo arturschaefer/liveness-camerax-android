@@ -35,13 +35,15 @@ internal class VisionFaceDetector : FrameFaceDetector {
 
     @SuppressLint("UnsafeOptInUsageError")
     override fun detect(imageProxy: ImageProxy, processImage: (List<Face>) -> Unit) {
-        val image: InputImage = InputImage.fromMediaImage(
-            imageProxy.image,
-            imageProxy.imageInfo.rotationDegrees
-        )
+        imageProxy.image?.let{
+            val image: InputImage = InputImage.fromMediaImage(
+                it,
+                imageProxy.imageInfo.rotationDegrees
+            )
 
-        processImage(image, handleSuccessImage(processImage)) {
-            imageProxy.close()
+            processImage(image, handleSuccessImage(processImage)) {
+                imageProxy.close()
+            }
         }
     }
 
