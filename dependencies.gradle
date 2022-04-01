@@ -13,7 +13,7 @@ ext.versions = [
         ktx               : '1.7.0',
 
         //CameraX
-        cameraX           : '1.0.2',
+        cameraX           : '1.1.0-beta02',
         cameraXOthers     : '1.1.0-beta02',
 
         //ML Kit
