@@ -35,10 +35,10 @@ ext.versions = [
 
         //Tests
         junit5            : '1.8.0.0',
-        mockk             : '1.12.1',
+        mockk             : '1.12.3',
         espresso          : '3.4.0',
-        jupiterJunitApi   : '5.8.0',
-        jupiterJunitEngine: '5.8.0',
+        jupiterJunitApi   : '5.8.2',
+        jupiterJunitEngine: '5.8.2',
 
         //UI
         appcompat         : '1.4.1',
