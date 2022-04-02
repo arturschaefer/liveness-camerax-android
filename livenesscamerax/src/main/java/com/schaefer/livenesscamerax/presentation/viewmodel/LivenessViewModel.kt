@@ -8,10 +8,11 @@ import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.core.viewmodel.StateViewModel
 import com.schaefer.domain.model.HeadMovement
-import com.schaefer.domain.repository.CheckLivenessRepository
+import com.schaefer.domain.repository.LivenessRepository
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.domain.model.StepLiveness
-import kotlinx.coroutines.InternalCoroutinesApi
+import com.schaefer.livenesscamerax.domain.model.toDomain
+import com.schaefer.livenesscamerax.domain.usecase.GetStepMessageUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -20,10 +21,10 @@ import java.util.LinkedList
 
 private const val MINIMUM_LUMINOSITY = 100
 
-@InternalCoroutinesApi
 internal class LivenessViewModel(
     private val resourcesProvider: ResourcesProvider,
-    private val checkLivenessRepository: CheckLivenessRepository<FaceResult>,
+    private val livenessRepository: LivenessRepository<FaceResult>,
+    private val getStepMessageUseCase: GetStepMessageUseCase,
 ) : StateViewModel<LivenessViewState>(LivenessViewState()) {
     // UI State
     private val _state = LivenessViewState()
@@ -34,8 +35,7 @@ internal class LivenessViewModel(
 
     // Faces
     private var facesMutable = listOf<FaceResult>()
-    private var moreThanOneFaceMutable = false
-    private var atLeastOneEyeIsOpenMutable = false
+    private var isFacesDetectedCorrect = false
     private val hasBlinkedMutable = MutableLiveData<Boolean>()
     val hasBlinked: LiveData<Boolean> = hasBlinkedMutable
     private val hasSmiledMutable = MutableLiveData<Boolean>()
@@ -69,13 +69,12 @@ internal class LivenessViewModel(
 
     private fun handleFaces(listFaceResult: List<FaceResult>) {
         facesMutable = listFaceResult
-        moreThanOneFaceMutable = checkLivenessRepository.hasMoreThanOneFace(listFaceResult)
+        isFacesDetectedCorrect = livenessRepository.isFacesDetectedCorrect(listFaceResult)
 
-        if (!moreThanOneFaceMutable) {
+        if (!isFacesDetectedCorrect) {
             setState(_state.livenessMessage(getMessage()))
             val face = listFaceResult.first()
             checkFaceLiveness(face)
-            atLeastOneEyeIsOpenMutable = checkLivenessRepository.validateAtLeastOneEyeIsOpen(face)
         } else {
             requestedSteps.apply {
                 clear()
@@ -96,31 +95,31 @@ internal class LivenessViewModel(
                     }
                 }
                 StepLiveness.STEP_HEAD_FRONTAL -> {
-                    if (checkLivenessRepository.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
+                    if (livenessRepository.detectEulerYMovement(face.headEulerAngleY) == HeadMovement.CENTER) {
                         removeCurrentStep()
                         headMovementCenterMutable.value = true
                     }
                 }
                 StepLiveness.STEP_HEAD_LEFT -> {
-                    checkLivenessRepository.validateHeadMovement(face, HeadMovement.LEFT) {
+                    livenessRepository.validateHeadMovement(face, HeadMovement.LEFT) {
                         removeCurrentStep()
                         headMovementLeftMutable.value = it
                     }
                 }
                 StepLiveness.STEP_HEAD_RIGHT -> {
-                    checkLivenessRepository.validateHeadMovement(face, HeadMovement.RIGHT) {
+                    livenessRepository.validateHeadMovement(face, HeadMovement.RIGHT) {
                         removeCurrentStep()
                         headMovementRightMutable.value = it
                     }
                 }
                 StepLiveness.STEP_SMILE -> {
-                    checkLivenessRepository.checkSmile(face.smilingProbability) {
+                    livenessRepository.checkSmile(face.smilingProbability) {
                         removeCurrentStep()
-                        hasSmiledMutable.value = it
+                        hasSmiledMutable.value = true
                     }
                 }
                 StepLiveness.STEP_BLINK -> {
-                    checkLivenessRepository.checkBothEyes(
+                    livenessRepository.validateBlinkedEyes(
                         face.leftEyeOpenProbability,
                         face.rightEyeOpenProbability
                     ) {
@@ -146,39 +145,12 @@ internal class LivenessViewModel(
         originalRequestedSteps = LinkedList<StepLiveness>().apply { addAll(validateRequested) }
         setState(_state.livenessMessage(getMessage()))
     }
-
     private fun removeCurrentStep() {
         requestedSteps.pop()
         setState(_state.livenessMessage(getMessage()))
     }
 
     private fun getMessage(): String {
-        requestedSteps.let {
-            if (it.isNullOrEmpty()) {
-                return resourcesProvider.getString(R.string.liveness_camerax_step_completed)
-            }
-
-            return when (it.first) {
-                StepLiveness.STEP_LUMINOSITY -> {
-                    resourcesProvider.getString(R.string.liveness_camerax_step_luminosity)
-                }
-                StepLiveness.STEP_HEAD_FRONTAL -> {
-                    resourcesProvider.getString(R.string.liveness_camerax_step_head_frontal)
-                }
-                StepLiveness.STEP_HEAD_RIGHT -> {
-                    resourcesProvider.getString(R.string.liveness_camerax_step_head_left)
-                }
-                StepLiveness.STEP_HEAD_LEFT -> {
-                    resourcesProvider.getString(R.string.liveness_camerax_step_head_right)
-                }
-                StepLiveness.STEP_SMILE -> {
-                    resourcesProvider.getString(R.string.liveness_camerax_step_smile)
-                }
-                StepLiveness.STEP_BLINK -> {
-                    resourcesProvider.getString(R.string.liveness_camerax_step_blink_eyes)
-                }
-                null -> resourcesProvider.getString(R.string.liveness_camerax_step_completed)
-            }
-        }
+        return getStepMessageUseCase(requestedSteps.map { it.toDomain() })
     }
 }
