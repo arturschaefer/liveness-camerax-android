@@ -36,9 +36,8 @@ dependencies {
     implementation project(path: ":livenesscamerax:domain")
     implementation project(path: ":livenesscamerax:core")
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
     implementation "androidx.core:core-ktx:$versions.ktx"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle"
 
     //Google Services
     implementation "com.google.android.gms:play-services-mlkit-face-detection:$versions.faceDetection"

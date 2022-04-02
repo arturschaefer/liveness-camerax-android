@@ -9,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:$versions.gradle"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$versions.kotlin"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -22,7 +22,7 @@ plugins {
     id "io.gitlab.arturbosch.detekt" version "$detektVersion"
 }
 
-allprojects{
+allprojects {
     apply plugin: "org.jlleitschuh.gradle.ktlint"
     apply plugin: 'io.gitlab.arturbosch.detekt'
 
@@ -39,4 +39,5 @@ def scriptsDirectory(scripts) {
     def directory = file('scripts')
     return new File(directory, scripts)
 }
+
 apply from: scriptsDirectory('git-hook.gradle')
