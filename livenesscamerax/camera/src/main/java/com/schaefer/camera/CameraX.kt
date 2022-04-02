@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface CameraX {
     fun startCamera(cameraPreviewView: PreviewView)
     fun enableFlash(enabled: Boolean)
-    fun takePicture(takenByUser: Boolean)
+    fun takePicture(takenByUser: Boolean = false)
     fun observeFaceList(): Flow<List<FaceResult>>
     fun observeLuminosity(): Flow<Double>
     fun getLifecycleObserver(): LifecycleObserver

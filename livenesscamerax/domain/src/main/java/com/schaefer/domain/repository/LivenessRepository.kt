@@ -2,18 +2,18 @@ package com.schaefer.domain.repository
 
 import com.schaefer.domain.model.HeadMovement
 
-interface CheckLivenessRepository<FACE> {
+interface LivenessRepository<FACE> {
     fun isEyeOpened(eyeOpenedProbabilityValue: Float?): Boolean
 
-    fun checkBothEyes(
+    fun validateBlinkedEyes(
         leftEyeProbability: Float?,
         rightEyeProbability: Float?,
         callbackBlinked: (Boolean) -> Unit
     ): Boolean
 
-    fun hasMoreThanOneFace(listFaceResult: List<FACE>): Boolean
+    fun isFacesDetectedCorrect(listFaceResult: List<FACE>): Boolean
 
-    fun checkSmile(smilingProbability: Float?, callbackSmiled: (Boolean) -> Unit): Boolean
+    fun checkSmile(smilingProbability: Float?, callbackSmiled: (Boolean) -> Unit)
 
     fun detectEulerYMovement(
         headEulerAngleY: Float
@@ -22,8 +22,6 @@ interface CheckLivenessRepository<FACE> {
     fun validateHeadMovement(
         face: FACE,
         headMovement: HeadMovement,
-        removeCurrentStep: (Boolean) -> Unit
+        callbackHeadMovement: (Boolean) -> Unit
     )
-
-    fun validateAtLeastOneEyeIsOpen(face: FACE): Boolean
 }

@@ -61,14 +61,9 @@ internal class CameraXImpl(
     }
 
     override fun takePicture(takenByUser: Boolean) {
-        // Create time-stamped output file to hold the image
         val photoFile = fileRepository.getPhotoFile()
-
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(application),
