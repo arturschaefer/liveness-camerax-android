@@ -12,16 +12,13 @@ import androidx.fragment.app.viewModels
 import com.schaefer.camera.CameraX
 import com.schaefer.camera.core.callback.CameraXCallback
 import com.schaefer.camera.core.callback.CameraXCallbackFactory
-import com.schaefer.camera.domain.model.FaceResult
 import com.schaefer.camera.navigation.CameraXNavigation
 import com.schaefer.core.extensions.observeOnce
 import com.schaefer.core.extensions.orFalse
 import com.schaefer.core.extensions.shouldShowRequest
 import com.schaefer.core.extensions.snack
-import com.schaefer.core.resourceprovider.ResourcesProvider
 import com.schaefer.domain.model.PhotoResultDomain
 import com.schaefer.domain.model.exceptions.LivenessCameraXException
-import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.domain.repository.ResultLivenessRepository
 import com.schaefer.livenesscamerax.R
 import com.schaefer.livenesscamerax.databinding.LivenessCameraxFragmentBinding
@@ -49,15 +46,13 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             EXTRAS_LIVENESS_CAMERA_SETTINGS
         ) ?: CameraSettings()
     }
-    private val resourceProvider: ResourcesProvider by lazy { container.provideResourceProvider() }
-    private val checkLivenessRepository: CheckLivenessRepository<FaceResult> by lazy {
-        container.provideCheckLivenessRepository()
-    }
+
     private val resultLivenessRepository: ResultLivenessRepository<PhotoResultDomain> by lazy {
         container.provideResultLivenessRepository()
     }
+
     private val livenessViewModel: LivenessViewModel by viewModels {
-        LivenessViewModelFactory(resourceProvider, checkLivenessRepository)
+        LivenessViewModelFactory()
     }
 
     private val cameraXCallback: CameraXCallback by lazy {
@@ -137,17 +132,13 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
         livenessViewModel.apply {
             observeFacesDetection(cameraX.observeFaceList())
             observeLuminosity(cameraX.observeLuminosity())
-            hasBlinked.observeOnce(viewLifecycleOwner) { takePicture(it) }
-            hasSmiled.observeOnce(viewLifecycleOwner) { takePicture(it) }
-            hasGoodLuminosity.observeOnce(viewLifecycleOwner) { takePicture(it) }
-            hasHeadMovedLeft.observeOnce(viewLifecycleOwner) { takePicture(it) }
-            hasHeadMovedRight.observeOnce(viewLifecycleOwner) { takePicture(it) }
-            hasHeadMovedCenter.observeOnce(viewLifecycleOwner) { takePicture(it) }
+            hasBlinked.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
+            hasSmiled.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
+            hasGoodLuminosity.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
+            hasHeadMovedLeft.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
+            hasHeadMovedRight.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
+            hasHeadMovedCenter.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
         }
-    }
-
-    private fun takePicture(requestPicture: Boolean) {
-        if (requestPicture) cameraX.takePicture(false)
     }
 
     private fun startCamera() {
