@@ -10,6 +10,7 @@ import com.schaefer.core.resourceprovider.ResourcesProviderFactory
 import com.schaefer.domain.model.PhotoResultDomain
 import com.schaefer.domain.repository.CheckLivenessRepository
 import com.schaefer.domain.repository.ResultLivenessRepository
+import com.schaefer.livenesscamerax.domain.usecase.GetStepMessageUseCase
 import com.schaefer.livenesscamerax.navigation.LivenessEntryPoint
 
 internal class LivenessCameraXContainer(private val application: Application) {
@@ -31,5 +32,9 @@ internal class LivenessCameraXContainer(private val application: Application) {
 
     fun provideCheckLivenessRepository(): CheckLivenessRepository<FaceResult> {
         return CheckLivenessRepositoryFactory.create()
+    }
+
+    fun provideGetStepMessagesUseCase(resourcesProvider: ResourcesProvider = provideResourceProvider()): GetStepMessageUseCase {
+        return GetStepMessageUseCase(resourcesProvider)
     }
 }
