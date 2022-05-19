@@ -8,13 +8,13 @@ ext.versions = [
 
         //gradle plugins
         gradle            : '7.0.3',
-        kotlin            : '1.6.10',
+        kotlin            : '1.6.21',
         jvmTarget         : '1.8',
         ktx               : '1.7.0',
 
         //CameraX
-        cameraX           : '1.1.0-beta02',
-        cameraXOthers     : '1.1.0-beta02',
+        cameraX           : '1.2.0-alpha01',
+        cameraXOthers     : '1.2.0-alpha01',
 
         //ML Kit
         mlkit             : '16.0.5',
@@ -46,5 +46,5 @@ ext.versions = [
         fragment          : '1.4.1',
         activity          : '1.4.0',
         cardview          : '1.0.0',
-        material          : '1.5.0',
+        material          : '1.6.0',
 ]
