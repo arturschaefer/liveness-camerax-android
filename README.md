@@ -2,7 +2,7 @@
 
 An easy way to consume results from [CameraX](https://developer.android.com/training/camerax)
 and [Firebase Face Detection](https://developers.google.com/ml-kit/vision/face-detection) as an API.
-With simple steps, you can challenge your user before sinding pictures to your services.
+With simple steps, you can challenge your user before sending pictures to your services.
 
 You also can download a sample to test
 from [PlayStore](https://play.google.com/store/apps/details?id=com.schaefer.livenessmlkit)
@@ -20,7 +20,7 @@ allprojects {
 }  
 ```
 
-### Add dependencie to your project build.gradle:
+### Add dependency to your project build.gradle:
 
 ```
 dependencies {
@@ -79,7 +79,7 @@ inside [StepLiveness](https://github.dev/arturschaefer/liveness-camerax-android/
   probability too.
 * STEP_BLINK: After both eyes opened, we checked if they blinked.
 * STEP_HEAD_FRONTAL, STEP_HEAD_LEFT, STEP_HEAD_RIGHT: Each step references the head's position
-  inside an Euler's graphic. These heads steps could be confunsing to the user.
+  inside an Euler's graphic. These heads steps could be confusing to the user.
 
 ## How does its work
 
