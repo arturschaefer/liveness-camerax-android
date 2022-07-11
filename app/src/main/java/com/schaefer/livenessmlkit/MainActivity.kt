@@ -87,6 +87,8 @@ class MainActivity : AppCompatActivity() {
         return when (this.id) {
             R.id.chipStepSmile -> StepLiveness.STEP_SMILE
             R.id.chipStepBlink -> StepLiveness.STEP_BLINK
+            R.id.chipStepMovementLeft -> StepLiveness.STEP_HEAD_LEFT
+            R.id.chipStepMovementRight -> StepLiveness.STEP_HEAD_RIGHT
             else -> StepLiveness.STEP_LUMINOSITY
         }
     }
