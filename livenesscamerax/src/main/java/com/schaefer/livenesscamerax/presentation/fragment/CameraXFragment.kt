@@ -33,9 +33,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import timber.log.Timber
 
-@ExperimentalCoroutinesApi
 @FlowPreview
-@InternalCoroutinesApi
 internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
 
     private var _binding: LivenessCameraxFragmentBinding? = null

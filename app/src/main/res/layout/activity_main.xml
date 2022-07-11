@@ -48,6 +48,25 @@
                 app:checkedIconEnabled="true" />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/chipStepMovementLeft"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Head Left"
+                app:checkedIconEnabled="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStepMovementRight"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Head Right"
+                app:checkedIconEnabled="true"
+                app:chipIconVisible="true" />
+
+            <com.google.android.material.chip.Chip
                 android:id="@+id/chipStepBlink"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
