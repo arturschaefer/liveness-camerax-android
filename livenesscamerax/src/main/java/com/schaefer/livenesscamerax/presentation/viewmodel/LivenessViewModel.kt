@@ -49,7 +49,6 @@ internal class LivenessViewModel(
     private val headMovementCenterMutable = MutableLiveData<Boolean>()
     val hasHeadMovedCenter: LiveData<Boolean> = headMovementCenterMutable
 
-    // TODO handle error
     fun observeFacesDetection(facesFlowable: Flow<List<FaceResult>>) {
         viewModelScope.launch {
             facesFlowable.collect {
@@ -61,7 +60,6 @@ internal class LivenessViewModel(
     fun observeLuminosity(luminosity: Flow<Double>) {
         viewModelScope.launch {
             luminosity.collect {
-                // TODO need to decide if it's necessary
                 Timber.tag("Luminosity").d(it.toString())
             }
         }

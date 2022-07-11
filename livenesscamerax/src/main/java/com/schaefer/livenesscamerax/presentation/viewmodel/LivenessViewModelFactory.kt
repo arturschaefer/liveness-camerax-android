@@ -8,8 +8,6 @@ import com.schaefer.domain.repository.LivenessRepository
 import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.domain.usecase.GetStepMessageUseCase
 
-// Reference https://github.com/android/architecture-components-samples/blob/master/BasicRxJavaSampleKotlin/app/src/main/java/com/example/android/observability/ui/ViewModelFactory.kt
-
 private const val UNKNOWN_VIEW_MODEL = "Unknown ViewModel class"
 
 internal class LivenessViewModelFactory(
