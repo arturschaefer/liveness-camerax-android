@@ -8,10 +8,15 @@ plugins {
 apply from: "$rootDir/dependencies.gradle"
 
 android {
+    namespace "com.schaefer.livenesscamerax"
     resourcePrefix 'liveness_camerax'
 
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildToolsVersion
+
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         minSdkVersion versions.minSdk

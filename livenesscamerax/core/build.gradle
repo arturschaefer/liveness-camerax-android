@@ -6,6 +6,7 @@ plugins {
 apply from: "$rootDir/dependencies.gradle"
 
 android {
+    namespace "com.schaefer.core"
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildToolsVersion
 
