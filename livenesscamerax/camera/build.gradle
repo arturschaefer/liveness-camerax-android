@@ -35,6 +35,10 @@ android {
     kotlinOptions {
         jvmTarget = versions.jvmTarget
     }
+
+    lint {
+        disable "NullSafeMutableLiveData"
+    }
 }
 
 dependencies {
@@ -54,5 +58,5 @@ dependencies {
     implementation "androidx.camera:camera-view:$versions.cameraXOthers"
 
     //Apache
-    implementation "org.apache.commons:commons-io:$versions.apacheCommons"
+    implementation "commons-io:commons-io:$versions.apacheCommons"
 }

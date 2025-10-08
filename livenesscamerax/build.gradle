@@ -89,7 +89,7 @@ afterEvaluate {
                 from components.release
                 groupId = "com.schaefer.livenesscamerax"
                 artifactId = "livenesscamerax"
-                version = '0.0.2'
+                version = '0.0.3'
             }
         }
     }

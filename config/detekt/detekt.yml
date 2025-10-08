@@ -35,7 +35,7 @@ complexity:
     threshold: 10
     includeStaticDeclarations: false
     includePrivateDeclarations: false
-  ComplexMethod:
+  CyclomaticComplexMethod:
     active: true
     ignoreSingleWhenExpression: true
   LargeClass:
@@ -73,48 +73,6 @@ exceptions:
   ThrowingExceptionsWithoutMessageOrCause:
     active: true
   ThrowingNewInstanceOfSameException:
-    active: true
-
-formatting:
-  active: true
-  android: false
-  autoCorrect: true
-  AnnotationSpacing:
-    active: true
-  EnumEntryNameCase:
-    active: true
-  ImportOrdering:
-    active: true
-  Indentation:
-    active: true
-  MaximumLineLength:
-    active: false
-  NoEmptyFirstLineInMethodBlock:
-    active: true
-  ParameterListWrapping:
-    active: false
-  SpacingAroundAngleBrackets:
-    active: true
-  SpacingAroundDoubleColon:
-    active: true
-  SpacingAroundUnaryOperator:
-    active: true
-  SpacingBetweenDeclarationsWithAnnotations:
-    active: true
-  SpacingBetweenDeclarationsWithComments:
-    active: true
-
-naming:
-  InvalidPackageDeclaration:
-    active: true
-    excludes: [ '**/buildSrc/**/*.kt', '**/*.kts' ]
-  NoNameShadowing:
-    active: true
-  NonBooleanPropertyPrefixedWithIs:
-    active: true
-  VariableMaxLength:
-    active: true
-  VariableMinLength:
     active: true
 
 potential-bugs:
@@ -159,19 +117,10 @@ style:
     active: true
   ForbiddenComment:
     active: true
-    values:
-      - 'TODO:'
-      - 'FIXME:'
-      - 'STOPSHIP:'
-      - '@author'
-      - '@requiresTypeResolution'
+    comments: ['TODO:', 'FIXME:', 'STOPSHIP:', '@author', '@requiresTypeResolution']
     excludes: [ '**/detekt-rules-style/**/ForbiddenComment.kt' ]
   ForbiddenVoid:
     active: true
-  LibraryCodeMustSpecifyReturnType:
-    active: true
-    excludes: [ '**/*.kt' ]
-    includes: [ '**/detekt-api/src/main/**/api/*.kt' ]
   MagicNumber:
     excludes: [ '**/test/**', '**/*Test.kt', '**/*Spec.kt' ]
     ignorePropertyDeclaration: true
