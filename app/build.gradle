@@ -45,9 +45,8 @@ android {
 
 dependencies {
     //TODO implement this library using this path in your project
-//    implementation 'com.github.arturschaefer:liveness-camerax-android:0.0.3'
+    implementation 'com.github.arturschaefer:liveness-camerax-android:0.0.3'
 
-    implementation project(path: ":livenesscamerax")
     implementation "com.github.bumptech.glide:glide:$versions.glide"
     annotationProcessor "com.github.bumptech.glide:compiler:$versions.glide"
 
