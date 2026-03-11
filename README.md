@@ -59,6 +59,43 @@ class MainActivity : AppCompatActivity() {
 }
 ```
 
+### Per-step completion callback
+
+You can provide an optional `onStepCompleted` callback to react to each liveness step as the user
+completes it — useful for triggering custom sounds, animations, or analytics events:
+
+```kotlin
+LivenessEntryPoint.startLiveness(
+    context = this,
+    onStepCompleted = { step ->
+        // Called after every successful step (e.g. STEP_SMILE, STEP_BLINK…)
+        Log.d("Liveness", "Step completed: $step")
+    }
+) { result ->
+    // final result
+}
+```
+
+### Built-in haptic & sound feedback
+
+Pass `enableVibrationFeedback = true` and/or `enableSoundFeedback = true` inside `CameraSettings` to
+get a short vibration and/or a beep tone automatically after each step is completed:
+
+```kotlin
+LivenessEntryPoint.startLiveness(
+    context = this,
+    cameraSettings = CameraSettings(
+        enableVibrationFeedback = true,
+        enableSoundFeedback = true,
+    )
+) { result ->
+    // final result
+}
+```
+
+> **Note:** Vibration requires the `VIBRATE` permission. The library declares it automatically in
+> its manifest, so no extra setup is needed in your app.
+
 ## Customization
 
 You can customize all the assets and dimensions. It's only required to create the resources with the

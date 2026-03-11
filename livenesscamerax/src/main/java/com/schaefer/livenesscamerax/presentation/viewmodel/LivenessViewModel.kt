@@ -48,6 +48,8 @@ internal class LivenessViewModel(
     val hasHeadMovedRight: LiveData<Boolean> = headMovementRightMutable
     private val headMovementCenterMutable = MutableLiveData<Boolean>()
     val hasHeadMovedCenter: LiveData<Boolean> = headMovementCenterMutable
+    private val stepCompletedMutable = MutableLiveData<StepLiveness>()
+    val stepCompleted: LiveData<StepLiveness> = stepCompletedMutable
 
     fun observeFacesDetection(facesFlowable: Flow<List<FaceResult>>) {
         viewModelScope.launch {
@@ -144,7 +146,7 @@ internal class LivenessViewModel(
         setState(_state.livenessMessage(getMessage()))
     }
     private fun removeCurrentStep() {
-        requestedSteps.pop()
+        stepCompletedMutable.value = requestedSteps.pop()
         setState(_state.livenessMessage(getMessage()))
     }
 
