@@ -8,4 +8,4 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-kotlin { jvmToolchain(23) }
+kotlin { jvmToolchain(17) }
