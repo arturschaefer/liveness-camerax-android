@@ -11,7 +11,7 @@ ext.versions = [
         //gradle plugins
         gradle            : '8.9.1',
         kotlin            : '2.1.0',
-        jvmTarget         : '1.8',
+        jvmTarget         : '17',
         ktx               : '1.17.0',
 
         //CameraX
