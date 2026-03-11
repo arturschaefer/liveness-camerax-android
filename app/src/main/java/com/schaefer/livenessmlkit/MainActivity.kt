@@ -55,9 +55,15 @@ class MainActivity : AppCompatActivity() {
                     livenessEntryPoint.startLiveness(
                         cameraSettings = CameraSettings(
                             livenessStepList = mutableStepList,
-                            storageType = StorageType.INTERNAL
+                            storageType = StorageType.INTERNAL,
+                            enableVibrationFeedback = binding.switchVibration.isChecked,
+                            enableSoundFeedback = binding.switchSound.isChecked,
                         ),
                         context = this,
+                        onStepCompleted = { step ->
+                            binding.tvLastStep.isVisible = true
+                            binding.tvLastStep.text = getString(R.string.last_step_completed, step.name)
+                        },
                     ) { livenessCameraXResult ->
                         if (livenessCameraXResult.error == null) {
                             val listOfImages = arrayListOf<ByteArray>().apply {
