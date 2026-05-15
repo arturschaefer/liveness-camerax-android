@@ -1,11 +1,18 @@
 package com.schaefer.livenesscamerax.presentation.fragment
 
 import android.Manifest
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -26,12 +33,16 @@ import com.schaefer.livenesscamerax.di.LibraryModule.container
 import com.schaefer.livenesscamerax.domain.model.CameraSettings
 import com.schaefer.livenesscamerax.domain.model.toDomain
 import com.schaefer.livenesscamerax.navigation.EXTRAS_LIVENESS_CAMERA_SETTINGS
+import com.schaefer.livenesscamerax.navigation.LivenessEntryPoint
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModel
 import com.schaefer.livenesscamerax.presentation.viewmodel.LivenessViewModelFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.InternalCoroutinesApi
 import timber.log.Timber
+
+private const val VIBRATION_DURATION_MS = 80L
+private const val TONE_DURATION_MS = 100
 
 @FlowPreview
 internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
@@ -136,6 +147,38 @@ internal class CameraXFragment : Fragment(R.layout.liveness_camerax_fragment) {
             hasHeadMovedLeft.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
             hasHeadMovedRight.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
             hasHeadMovedCenter.observeOnce(viewLifecycleOwner) { cameraX.takePicture() }
+            stepCompleted.observe(viewLifecycleOwner) { step ->
+                LivenessEntryPoint.postStepCompletedCallback(step)
+                if (cameraSettings.enableVibrationFeedback) vibrateOnStepSuccess()
+                if (cameraSettings.enableSoundFeedback) playBeepOnStepSuccess()
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun vibrateOnStepSuccess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val manager = ContextCompat.getSystemService(requireContext(), VibratorManager::class.java)
+            manager?.defaultVibrator?.vibrate(
+                VibrationEffect.createOneShot(VIBRATION_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val vibrator = ContextCompat.getSystemService(requireContext(), Vibrator::class.java)
+            vibrator?.vibrate(
+                VibrationEffect.createOneShot(VIBRATION_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+            )
+        } else {
+            val vibrator = ContextCompat.getSystemService(requireContext(), Vibrator::class.java)
+            vibrator?.vibrate(VIBRATION_DURATION_MS)
+        }
+    }
+
+    private fun playBeepOnStepSuccess() {
+        try {
+            val toneGenerator = ToneGenerator(AudioManager.STREAM_NOTIFICATION, ToneGenerator.MAX_VOLUME)
+            toneGenerator.startTone(ToneGenerator.TONE_PROP_BEEP, TONE_DURATION_MS)
+        } catch (e: RuntimeException) {
+            Timber.e(e, "Failed to play step completion sound")
         }
     }
 

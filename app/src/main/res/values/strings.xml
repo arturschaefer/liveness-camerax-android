@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Liveness ML Kit</string>
     <string name="result_list">Result of Liveness: %s photos</string>
+    <string name="last_step_completed">Last step completed: %s</string>
 
     <!-- Liveness CameraX Strings-->
     <string name="liveness_camerax_app_name">LivenessCameraX</string>

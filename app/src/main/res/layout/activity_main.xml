@@ -88,6 +88,19 @@
     </HorizontalScrollView>
 
     <TextView
+        android:id="@+id/tvLastStep"
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/tvStepsTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvStepsTitle"
+        app:layout_constraintTop_toBottomOf="@+id/btnStartLiveness"
+        tools:text="Last step: STEP_SMILE"
+        tools:visibility="visible" />
+
+    <TextView
         android:id="@+id/tvListResult"
         style="@style/TextAppearance.MaterialComponents.Headline5"
         android:layout_width="0dp"
@@ -97,7 +110,7 @@
         app:layout_constraintEnd_toEndOf="@+id/tvStepsTitle"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/tvStepsTitle"
-        app:layout_constraintTop_toBottomOf="@+id/btnStartLiveness" />
+        app:layout_constraintTop_toBottomOf="@+id/tvLastStep" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupResultList"
@@ -124,6 +137,36 @@
         tools:listitem="@layout/layout_item_image"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/tvFeedbackTitle"
+        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Feedback options"
+        app:layout_constraintEnd_toEndOf="@+id/tvStepsTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvStepsTitle"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchVibration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Vibration feedback"
+        app:layout_constraintEnd_toEndOf="@+id/tvStepsTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvStepsTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvFeedbackTitle" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchSound"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Sound feedback"
+        app:layout_constraintEnd_toEndOf="@+id/tvStepsTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvStepsTitle"
+        app:layout_constraintTop_toBottomOf="@+id/switchVibration" />
+
     <Button
         android:id="@+id/btnStartLiveness"
         android:layout_width="wrap_content"
@@ -132,6 +175,6 @@
         android:text="Start Liveness"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView" />
+        app:layout_constraintTop_toBottomOf="@+id/switchSound" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

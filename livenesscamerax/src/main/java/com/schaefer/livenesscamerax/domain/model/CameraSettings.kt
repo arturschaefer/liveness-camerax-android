@@ -18,7 +18,9 @@ data class CameraSettings(
         StepLiveness.STEP_LUMINOSITY,
         StepLiveness.STEP_SMILE,
         StepLiveness.STEP_BLINK,
-    )
+    ),
+    val enableVibrationFeedback: Boolean = false,
+    val enableSoundFeedback: Boolean = false,
 ) : Parcelable
 
 internal fun CameraSettings.toDomain(): CameraSettingsDomain {
