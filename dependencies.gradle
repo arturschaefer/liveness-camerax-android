@@ -4,8 +4,8 @@ ext.versions = [
         targetSdk         : 36,
         versionCode       : 7,
         versionName       : '0.0.7',
-        libVersionCode    : 3,
-        libVersionName    : '0.0.4',
+        libVersionCode    : 5,
+        libVersionName    : '0.0.5',
         buildToolsVersion : '35.0.0',
 
         //gradle plugins
